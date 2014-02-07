@@ -150,7 +150,7 @@ sub add_point_point {
 	my $z;
 	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z + $p1->Z); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p2->X + $p1->X),
 		Y => ($p2->Y + $p1->Y),
 		Z => $z,
@@ -163,7 +163,7 @@ sub add_point_number {
 	my $z;
 	if(defined($p1->Z)) { $z = ($p1->Z + $n); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p1->X + $n),
 		Y => ($p1->Y + $n),
 		Z => $z,
@@ -177,7 +177,7 @@ sub subtract_point_point {
 	my $z;
 	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z - $p1->Z); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p2->X - $p1->X),
 		Y => ($p2->Y - $p1->Y),
 		Z => $z,
@@ -189,7 +189,7 @@ sub subtract_point_number {
 	my $z;
 	if(defined($p1->Z)) { $z = ($p1->Z - $n); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p1->X - $n),
 		Y => ($p1->Y - $n),
 		Z => $z,
@@ -203,7 +203,7 @@ sub multiply_point_point {
 	my $z;
 	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z * $p1->Z); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p2->X * $p1->X),
 		Y => ($p2->Y * $p1->Y),
 		Z => $z,
@@ -215,7 +215,7 @@ sub multiply_point_number {
 	my $z;
 	if(defined($p1->Z)) { $z = ($p1->Z * $n); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p1->X * $n),
 		Y => ($p1->Y * $n),
 		Z => $z,
@@ -229,7 +229,7 @@ sub divide_point_point {
 	my $z;
 	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z / $p1->Z); }
 		
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p2->X / $p1->X),
 		Y => ($p2->Y / $p1->Y),
 		Z => $z,
@@ -241,7 +241,7 @@ sub divide_point_number {
 	my $z;
 	if(defined($p1->Z)) { $z = ($p1->Z / $n); }
 	
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($p1->X / $n),
 		Y => ($p1->Y / $n),
 		Z => $z,
@@ -260,7 +260,7 @@ Geo::ShapeFile::Point - Geo::ShapeFile utility class.
   use Geo::ShapeFile::Point;
   use Geo::ShapeFile;
 
-  my $point = new Geo::ShapeFile::Point(X => 12345, Y => 54321);
+  my $point = Geo::ShapeFile::Point->new(X => 12345, Y => 54321);
 
 =head1 ABSTRACT
 

@@ -79,7 +79,7 @@ sub add_point {
 	} else {
 		my %point_opts = @_;
 
-		push(@{$self->{shp_points}}, new Geo::ShapeFile::Point(%point_opts));
+		push(@{$self->{shp_points}}, Geo::ShapeFile::Point->new(%point_opts));
 		$self->{shp_num_points}++;
 	}
 }
@@ -106,7 +106,7 @@ sub parse_shp_Point {
 	my $self = shift;
 
 	$self->extract_doubles('shp_X', 'shp_Y');
-	$self->{shp_points} = [new Geo::ShapeFile::Point(
+	$self->{shp_points} = [Geo::ShapeFile::Point->new(
 		X => $self->{shp_X},
 		Y => $self->{shp_Y},
 	)];
@@ -344,7 +344,7 @@ sub extract_points {
 
 	my @p = (); # points
 	while(@ps) {
-		push(@p, new Geo::ShapeFile::Point(X => shift(@ps), Y => shift(@ps)));
+		push(@p, Geo::ShapeFile::Point->new(X => shift(@ps), Y => shift(@ps)));
 	}
 	$self->{$label} = [@p];
 }
@@ -527,7 +527,7 @@ sub vertex_centroid {
 
 	foreach(@points) { $cx += $_->X; $cy += $_->Y; }
 
-	new Geo::ShapeFile::Point(
+	Geo::ShapeFile::Point->new(
 		X => ($cx / @points),
 		Y => ($cy / @points),
 	);
@@ -630,7 +630,7 @@ Geo::ShapeFile::Shape - Geo::ShapeFile utility class.
 
   use Geo::ShapeFile::Shape;
 
-  my $shape = new Geo::ShapeFile::Shape;
+  my $shape = Geo::ShapeFile::Shape->new;
   $shape->parse_shp($shape_data);
 
 =head1 ABSTRACT
@@ -654,7 +654,7 @@ None by default.
 
 Creates a new Geo::ShapeFile::Shape object, takes no arguments and returns
 the created object.  Normally Geo::ShapeFile does this for you when you call
-it's get_shp_record() method, so you shouldn't need to create a new object.
+its get_shp_record() method, so you shouldn't need to create a new object.
 (Eventually this module will have support for _creating_ shapefiles rather
 than just reading them, then this method will become important.
 

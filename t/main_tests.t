@@ -36,8 +36,8 @@ foreach(@test_points) {
 	} else {
 		$txt = "Point(X=$x,Y=$y)";
 	}
-	my $p1 = new Geo::ShapeFile::Point(X => $x, Y => $y, Z => $z, M => $m);
-	my $p2 = new Geo::ShapeFile::Point(Y => $y, X => $x, M => $m, Z => $z);
+	my $p1 = Geo::ShapeFile::Point->new(X => $x, Y => $y, Z => $z, M => $m);
+	my $p2 = Geo::ShapeFile::Point->new(Y => $y, X => $x, M => $m, Z => $z);
 	print "p1=$p1\n";
 	print "p2=$p2\n";
 	cmp_ok($p1, '==', $p2, "Points match");
@@ -49,7 +49,7 @@ foreach my $base (keys %data) {
 	foreach my $ext (qw/dbf shp shx/) {
 		ok(-f "$dir/$base.$ext", "$ext file exists for $base");
 	}
-	my $obj = $data{$base}->{object} = new Geo::ShapeFile("$dir/$base");
+	my $obj = $data{$base}->{object} = Geo::ShapeFile->new("$dir/$base");
 
 	# test SHP
 	cmp_ok(
