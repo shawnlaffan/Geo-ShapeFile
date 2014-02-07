@@ -1,6 +1,6 @@
 Revision history for Geo::ShapeFile.
 
-2.52  Fri Sep 14 10:43:34 EDT 2007
+2.52  2007-09-14
     - Fixed the overloading setup in Geo::ShapeFile::Point to keep it from
       failing the tests caused by recent changes in Test::Builder (it was
       definitely my bug though, don't blame the excellent Test modules for
@@ -38,14 +38,14 @@ Revision history for Geo::ShapeFile.
     - Fixed an argument ordering bug in Geo::ShapeFile::bounds_contains_point
       (also reported by Roger Crew, thanks for the all the help Roger!)
 
-2.51  Thu May 12 11:01:41 EDT 2005
+2.51  2005-05-12
     - Corrected a stupid math problem in Geo::ShapeFile::Shape::centroid
       function, reported by an anonymous rt.cpan.org user.
     - Fixed a problem discovered by Celia Mackie, where some complex shape
       types didn't have their Z and M values transferred into the points
       correctly, making it difficult to access those values.
 
-2.50  Sat Jul  3 19:08:50 EDT 2004
+2.50  2004-07-03
     - things calming down at new job, more free time at home for pet projects.
       hopefully this means more Geo::ShapeFile support to come (as well as
       posting some new modules in progress)
@@ -68,11 +68,11 @@ Revision history for Geo::ShapeFile.
       I couldn't find data that reproduced it), patch submitted by
       Aleksandar Jelenak.
 
-2.10  Mon Mar 17 14:59:00 2003
+2.10  2003-03-17
     - fixed missing prerequisites in Makefile.PL
     - initial support for creating new shapefiles
     - removed some less-than-useful required modules
 
-1.5   Sun Feb 16 11:35:00 2003
+1.5   2003-02-16
     - initial release
 
