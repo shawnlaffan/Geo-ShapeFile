@@ -10,10 +10,12 @@ BEGIN {
 	use_ok('Data::Dumper');
 };
 
+use rlib;
+
 my $dir = "t/test_data";
 
-use test_data;
-my %data = 
+use Geo::ShapeFile::TestHelpers;
+my %data = %Geo::ShapeFile::TestHelpers::data;
 
 
 my @test_points = (

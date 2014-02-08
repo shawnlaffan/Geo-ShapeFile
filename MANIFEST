@@ -1,13 +1,14 @@
 Changes
-MANIFEST			This list of files
-Makefile.PL
-README
+eg/shpdump
 lib/Geo/ShapeFile.pm
 lib/Geo/ShapeFile/Point.pm
 lib/Geo/ShapeFile/Shape.pm
-eg/shpdump
+Makefile.PL
+MANIFEST			This list of files
+META.yml			Module meta-data (added by MakeMaker)
+README
+t/lib/Geo/ShapeFile/TestHelpers.pm
 t/main_tests.t
-t/test_data.pl
 t/test_data/anno.aux
 t/test_data/anno.dbf
 t/test_data/anno.shp
@@ -62,4 +63,3 @@ t/test_data/states.sbn
 t/test_data/states.sbx
 t/test_data/states.shp
 t/test_data/states.shx
-META.yml                                 Module meta-data (added by MakeMaker)
