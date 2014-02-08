@@ -1,3 +1,9 @@
 .git.+
 
 t/.*\.html
+
+Makefile.old
+MANIFEST.bak
+Makefile
+MYMETA.yml
+MYMETA.json
