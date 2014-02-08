@@ -5,8 +5,8 @@ use Carp;
 use Geo::ShapeFile;
 use Geo::ShapeFile::Point;
 
-our @ISA = qw(Geo::ShapeFile);
-our $VERSION = '2.52';
+use parent qw /Geo::ShapeFile/;
+our $VERSION = '2.53';
 
 sub new {
     my $proto = shift;

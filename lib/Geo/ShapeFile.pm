@@ -6,7 +6,7 @@ use IO::File;
 use Geo::ShapeFile::Shape;
 use Config;
 
-our $VERSION = '2.52';
+our $VERSION = '2.53';
 
 # Preloaded methods go here.
 sub new {
@@ -92,6 +92,7 @@ sub cache {
     return $self->{_object_cache}->{$type}->{$obj};
 }
 
+
 sub read_shx_header { shift()->read_shx_shp_header('shx',@_); }
 sub read_shp_header { shift()->read_shx_shp_header('shp',@_); }
 sub read_shx_shp_header {
@@ -124,6 +125,19 @@ sub type_is {
     my $type = shift;
 
     return(lc($self->type($self->shape_type)) eq lc($type));
+}
+
+sub get_dbf_field_names {
+    my $self = shift;
+
+    if (!defined $self->{dbf_field_names}) {
+        croak 'dbf field names not loaded yet';
+    }
+
+    #  make sure we return a copy
+    my @fld_names = @{$self->{dbf_field_names}};
+
+    return wantarray ? @fld_names : \@fld_names;
 }
 
 sub read_dbf_header {
