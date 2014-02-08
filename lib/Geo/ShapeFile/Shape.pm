@@ -514,22 +514,24 @@ sub vertex_centroid {
     my $self = shift;
     my $part = shift;
 
-    my $cx = 0;
-    my $cy = 0;
+    my ($cx, $cy) = (0, 0);
 
     my @points = ();
-    if($part) {
+    if ($part) {
         @points = $self->get_part($part);
     }
     else {
         @points = $self->points;
     }
 
-    foreach(@points) { $cx += $_->X; $cy += $_->Y; }
+    foreach (@points) {
+        $cx += $_->X;
+        $cy += $_->Y;
+    }
 
     Geo::ShapeFile::Point->new(
-        X => ($cx / @points),
-        Y => ($cy / @points),
+        X => $cx / @points,
+        Y => $cy / @points,
     );
 }
 *centroid = \&vertex_centroid;
@@ -548,12 +550,14 @@ sub area_centroid {
     else {
         @parts = (1 .. $self->num_parts);
     }
+
     for my $part ( @parts ) {
         my ( $p0, @pts )  = $self->get_part( $part );
         my ( $x0, $y0 )   = ( $p0->X, $p0->Y );
         my ( $x1, $y1 )   = ( 0, 0 );
         my ( $cxp, $cyp ) = ( 0, 0 );
         my $Ap = 0;
+
         for ( @pts ) {
             my $x2 = $_->X - $x0;
             my $y2 = $_->Y - $y0;
@@ -562,12 +566,16 @@ sub area_centroid {
             $cyp += $a * ( $y2 + $y1 ) / 3;
             ( $x1, $y1 ) = ( $x2, $y2 );
         }
+
         $cx += $Ap * $x0 + $cxp;
         $cy += $Ap * $y0 + $cyp;
         $A += $Ap;
     }
 
-    return Geo::ShapeFile::Point->new( X => ( $cx / $A ), Y => ( $cy / $A ) );
+    return Geo::ShapeFile::Point->new(
+        X => $cx / $A,
+        Y => $cy / $A,
+    );
 }
 
 sub dump {
