@@ -10,8 +10,8 @@ our $VERSION = '2.53';
 
 sub new {
     my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my %args = @_;
+    my $class = ref ($proto) || $proto;
+    my %args  = @_;
 
     my $self = {
         shp_content_length  => 0,
@@ -37,7 +37,7 @@ sub new {
         $self->{$_} = $args{$_};
     }
 
-    bless($self, $class);
+    bless $self, $class;
 
     return $self;
 }
@@ -78,13 +78,13 @@ sub add_point {
     if(@_ == 1) {
         my $point = shift;
         if($point->isa("Geo::ShapeFile::Point")) {
-            push(@{$self->{shp_points}}, $point);
+            push @{$self->{shp_points}}, $point;
         }
     }
     else {
         my %point_opts = @_;
 
-        push(@{$self->{shp_points}}, Geo::ShapeFile::Point->new(%point_opts));
+        push @{$self->{shp_points}}, Geo::ShapeFile::Point->new(%point_opts);
         $self->{shp_num_points}++;
     }
 }
@@ -93,7 +93,7 @@ sub add_point {
 sub add_part {
     my $self = shift;
 
-    push(@{$self->{shp_parts}},$self->{shp_num_parts}++);
+    push @{$self->{shp_parts}}, $self->{shp_num_parts}++;
 }
 
 # TODO - finish me
@@ -151,8 +151,8 @@ sub parse_shp_MultiPoint {
     my $self = shift;
 
     $self->extract_bounds();
-    $self->extract_ints('little','shp_num_points');
-    $self->extract_points($self->{shp_num_points},'shp_points');
+    $self->extract_ints('little', 'shp_num_points');
+    $self->extract_points($self->{shp_num_points}, 'shp_points');
 }
 #  MultiPoint
 # Double[4]                     Box                     // Bounding Box
@@ -289,7 +289,7 @@ sub extract_ints {
     my $end = shift;
     my @what = @_;
 
-    my $template = ($end =~ /^l/i)?'V':'N';
+    my $template = ($end =~ /^l/i) ? 'V' :'N';
 
     $self->extract_and_unpack(4, $template, @what);
 }
@@ -300,12 +300,12 @@ sub extract_count_ints {
     my $end = shift;
     my $label = shift;
 
-    my $template = ($end =~ /^l/i)?'V':'N';
+    my $template = ($end =~ /^l/i) ? 'V' :'N';
 
-    my $tmp = substr($self->{shp_data},0,($count*4),'');
-    my @tmp = unpack($template.$count,$tmp);
+    my $tmp = substr $self->{shp_data}, 0, ($count*4) ,'';
+    my @tmp = unpack $template . $count, $tmp;
     #my @tmp = unpack($template."[$count]",$tmp);
-        
+
     $self->{$label} = [@tmp];
 }
 
@@ -316,8 +316,8 @@ sub extract_doubles {
     my $template = 'd';
 
     foreach ( @what ) {
-        my $tmp = substr( $self->{shp_data}, 0, $size, '' );
-        $self->{ $_ } = unpack( 'b', pack( 'S', 1 ) )
+        my $tmp = substr $self->{shp_data}, 0, $size, '';
+        $self->{ $_ } = unpack ( 'b', pack( 'S', 1 ) )
             ? unpack( $template, $tmp )
             : unpack( $template, scalar( reverse( $tmp ) ) );
     }
@@ -328,10 +328,10 @@ sub extract_count_doubles {
     my $count = shift;
     my $label = shift;
 
-    my $tmp = substr($self->{shp_data},0,$count*8,'');
+    my $tmp = substr $self->{shp_data}, 0, $count*8, '';
     my @tmp = unpack( 'b', pack( 'S', 1 ) )
         ? unpack( 'd'.$count, $tmp )
-        : reverse( unpack( 'd'.$count, scalar( reverse( $tmp ) ) ) );
+        : reverse( unpack( 'd' . $count, scalar ( reverse( $tmp ) ) ) );
 
     $self->{$label} = [@tmp];
 }
@@ -361,11 +361,11 @@ sub extract_and_unpack {
     my @what = @_;
 
     foreach(@what) {
-        my $tmp = substr($self->{shp_data},0,$size,'');
+        my $tmp = substr $self->{shp_data}, 0, $size, '';
         if ( $template eq 'd' ) {
             $tmp = Geo::ShapeFile->byteswap( $tmp );
         }
-        $self->{$_} = unpack($template,$tmp);
+        $self->{$_} = unpack $template, $tmp;
     }
 }
 
@@ -374,17 +374,8 @@ sub parts {
     my $self = shift;
 
     my $parts = $self->{shp_parts};
-    if(wantarray) {
-        if($parts) {
-            return @{$parts};
-        }
-	else {
-            return ();
-        }
-    }
-    else {
-        return $parts;
-    }
+
+    return wantarray ? @{$parts || []} : $parts;
 }
 
 sub num_points { shift()->{shp_num_points}; }
@@ -392,38 +383,30 @@ sub points {
     my $self = shift;
 
     my $points = $self->{shp_points};
-    if(wantarray) {
-        if($points) {
-            return @{$points};
-        }
-	else {
-            return ();
-        }
-    }
-    else {
-        return $points;
-    }
+
+    return wantarray ? @{$points || []} : $points;
 }
 
 sub get_part {
-    my $self = shift;
+    my $self  = shift;
     my $index = shift;
 
     $index -= 1; # shift to a 0 index
 
-    my @parts = $self->parts;
+    my @parts  = $self->parts;
     my @points = $self->points;
-    my $beg = $parts[$index] || 0;
-    my $end = $parts[$index+1] || 0;
+    my $beg    = $parts[$index]   || 0;
+    my $end    = $parts[$index+1] || 0;  #  if we use 5.010 then we can use the // operator here
     $end -= 1;
-    if($end < 0) { $end = $#points; }
+    if ($end < 0) {
+        $end = $#points;
+    }
 
     return @points[$beg .. $end];
 }
 
 sub shape_type {
     my $self = shift;
-
     return $self->{shp_shape_type};
 }
 
@@ -435,19 +418,23 @@ sub shape_id {
 sub extract_z_data {
     my $self = shift;
 
-    $self->extract_doubles('shp_z_min','shp_z_max');
+    $self->extract_doubles('shp_z_min', 'shp_z_max');
     $self->extract_count_doubles($self->{shp_num_points}, 'shp_z_data');
     my @zdata = @{delete $self->{shp_z_data}};
-    for(0 .. $#zdata) { $self->{shp_points}->[$_]->Z($zdata[$_]); }
+    for (0 .. $#zdata) {
+        $self->{shp_points}->[$_]->Z($zdata[$_]);
+    }
 }
 
 sub extract_m_data {
     my $self = shift;
 
-    $self->extract_doubles('shp_m_min','shp_m_max');
+    $self->extract_doubles ('shp_m_min','shp_m_max');
     $self->extract_count_doubles($self->{shp_num_points}, 'shp_m_data');
     my @mdata = @{delete $self->{shp_m_data}};
-    for(0 .. $#mdata) { $self->{shp_points}->[$_]->M($mdata[$_]); }
+    for (0 .. $#mdata) {
+        $self->{shp_points}->[$_]->M($mdata[$_]);
+    }
 }
 
 sub extract_parts_and_points {
@@ -458,6 +445,8 @@ sub extract_parts_and_points {
     $self->extract_points($self->{shp_num_points},'shp_points');
 }
 
+
+#  these could be factory generated
 sub x_min { shift()->{shp_x_min}; }
 sub x_max { shift()->{shp_x_max}; }
 sub y_min { shift()->{shp_y_min}; }
@@ -471,9 +460,9 @@ sub has_point {
     my $self = shift;
     my $point = shift;
 
-    return 0 unless $self->bounds_contains_point($point);
+    return 0 if !$self->bounds_contains_point($point);
 
-    foreach($self->points) {
+    foreach ($self->points) {
         return 1 if $_ == $point;
     }
 
@@ -483,7 +472,7 @@ sub has_point {
 sub contains_point {
     my ( $self, $point ) = @_;
 
-    return 0 unless $self->bounds_contains_point( $point );
+    return 0 if !$self->bounds_contains_point( $point );
 
     my $a = 0;
     my ( $x0, $y0 ) = ( $point->X, $point->Y );
@@ -515,8 +504,8 @@ sub get_segments {
 
     my @points = $self->get_part($part);
     my @segments = ();
-    for(0 .. $#points-1) {
-        push(@segments,[$points[$_],$points[$_+1]]);
+    for (0 .. $#points-1) {
+        push @segments, [$points[$_], $points[$_+1]];
     }
     return @segments;
 }
@@ -550,25 +539,25 @@ sub area_centroid {
 
     my ( $cx, $cy ) = ( 0, 0 );
     my $A = 0;
-    
-    my @points;
-    my @parts = ();
-    if ( defined( $part ) ) {
+
+    my (@points, @parts);
+
+    if ( defined $part ) {
         @parts = ( $part );
     }
     else {
-        @parts = 1 .. $self->num_parts;
+        @parts = (1 .. $self->num_parts);
     }
     for my $part ( @parts ) {
-        my ( $p0, @pts ) = $self->get_part( $part );
-        my ( $x0, $y0 ) = ( $p0->X, $p0->Y );
-        my ( $x1, $y1 ) = ( 0, 0 );
+        my ( $p0, @pts )  = $self->get_part( $part );
+        my ( $x0, $y0 )   = ( $p0->X, $p0->Y );
+        my ( $x1, $y1 )   = ( 0, 0 );
         my ( $cxp, $cyp ) = ( 0, 0 );
         my $Ap = 0;
         for ( @pts ) {
             my $x2 = $_->X - $x0;
             my $y2 = $_->Y - $y0;
-            $Ap += ( my $a = $x2*$y1 - $x1*$y2 );
+            $Ap  += ( my $a = $x2*$y1 - $x1*$y2 );
             $cxp += $a * ( $x2 + $x1 ) / 3;
             $cyp += $a * ( $y2 + $y1 ) / 3;
             ( $x1, $y1 ) = ( $x2, $y2 );
@@ -577,6 +566,7 @@ sub area_centroid {
         $cy += $Ap * $y0 + $cyp;
         $A += $Ap;
     }
+
     return Geo::ShapeFile::Point->new( X => ( $cx / $A ), Y => ( $cy / $A ) );
 }
 
@@ -589,40 +579,40 @@ sub dump {
     #$self->get_part();
     #$self->x_min,x_max,y_min,y_max,z_min,z_max,m_min,m_max
 
-    $return .= sprintf("Shape Type: %s (id: %d)  Parts: %d   Points: %d\n",
+    $return .= sprintf
+        "Shape Type: %s (id: %d)  Parts: %d   Points: %d\n",
         $self->shape_type_text(),
         $self->shape_id(),
         $self->num_parts(),
-        $self->num_points(),
-    );
+        $self->num_points();
 
-    $return .= sprintf("\tX bounds(min=%s, max=%s)\n",
+    $return .= sprintf
+        "\tX bounds(min=%s, max=%s)\n",
         $self->x_min(),
-        $self->x_max(),
-    );
+        $self->x_max();
 
-    $return .= sprintf("\tY bounds(min=%s, max=%s)\n",
+    $return .= sprintf
+        "\tY bounds(min=%s, max=%s)\n",
         $self->y_min(),
-        $self->y_max(),
-    );
+        $self->y_max();
 
-    if(defined $self->z_min() && defined $self->z_max()) {
-        $return .= sprintf("\tZ bounds(min=%s, max=%s)\n",
+    if (defined $self->z_min() && defined $self->z_max()) {
+        $return .= sprintf
+            "\tZ bounds(min=%s, max=%s)\n",
             $self->z_min(),
-            $self->z_max(),
-        );
+            $self->z_max();
     }
 
-    if(defined $self->m_min() && defined $self->m_max()) {
-        $return .= sprintf("\tM bounds(min=%s, max=%s)\n",
+    if (defined $self->m_min() && defined $self->m_max()) {
+        $return .= sprintf
+            "\tM bounds(min=%s, max=%s)\n",
             $self->m_min(),
-            $self->m_max(),
-        );
+            $self->m_max();
     }
 
-    for(1 .. $self->num_parts()) {
+    for (1 .. $self->num_parts()) {
         $return .= "\tPart $_:\n";
-        foreach($self->get_part($_)) {
+        foreach ($self->get_part($_)) {
             $return .= "\t\t$_\n";
         }
     }
