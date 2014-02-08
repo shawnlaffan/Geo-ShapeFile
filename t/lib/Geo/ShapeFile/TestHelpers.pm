@@ -15,7 +15,8 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'HEIGHT LEVEL NAME_ NAME_ID OFFSETX OFFSETY SYMBOL TEXT X Y _deleted',
+        #dbf_labels => 'HEIGHT LEVEL NAME_ NAME_ID OFFSETX OFFSETY SYMBOL TEXT X Y _deleted',
+        dbf_labels => 'NAME_ NAME_ID X Y OFFSETX OFFSETY HEIGHT SYMBOL LEVEL TEXT _deleted',
     },
     brklinz  => {
         object     => undef,
@@ -47,7 +48,7 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'CAPITAL NAME POPULATION STATE_NAME _deleted',
+        dbf_labels => 'NAME CAPITAL STATE_NAME POPULATION _deleted',
     },
     drainage  => {
         object     => undef,
@@ -111,7 +112,7 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'AA AREA ATLAS_P ATLAS_S AVGHHINC CUMMKTSHR DIS130 DIS208 DIS425 DIS58 EAS_ EAS_ID EDHIGH EDLOW EDMED EDUC ELAT ELON HHNUMBER LIFESTYLES MKTSHR130 MKTSHR208 MKTSHR425 MKTSHR58 OPPT PENTRA PERIMETER POTENT PRFEDEA _deleted',
+        dbf_labels => 'AREA PERIMETER EAS_ EAS_ID ATLAS_P ATLAS_S EDLOW EDMED EDHIGH HHNUMBER AVGHHINC EDUC POTENT ELAT ELON DIS58 DIS130 DIS208 DIS425 MKTSHR58 MKTSHR130 MKTSHR208 MKTSHR425 LIFESTYLES CUMMKTSHR PENTRA OPPT PRFEDEA AA _deleted',
     },
     pline  => {
         object     => undef,
@@ -127,7 +128,7 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'CKT_NM CMPN FNODE_ GISO_TYPE_ LENGTH LOCK__ID LPOLY_ OBJECT__ID PHASE PHASE__ID PLINE_ PLINE_ID RPOLY_ SYMBOL SYM_NBR TNODE_ TYPE UID VOLTAGE _deleted',
+        dbf_labels => 'FNODE_ TNODE_ LPOLY_ RPOLY_ LENGTH PLINE_ PLINE_ID UID GISO_TYPE_ SYMBOL LOCK__ID PHASE__ID OBJECT__ID TYPE SYM_NBR PHASE CKT_NM VOLTAGE CMPN _deleted',
     },
     polygon  => {
         object     => undef,
@@ -143,7 +144,7 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'AA AREA ATLAS_P ATLAS_S AVGHHINC CUMMKTSHR DIS130 DIS208 DIS425 DIS58 EAS_ EAS_ID EDHIGH EDLOW EDMED EDUC ELAT ELON HHNUMBER LIFESTYLES MKTSHR130 MKTSHR208 MKTSHR425 MKTSHR58 OPPT PENTRA PERIMETER POTENT PRFEDEA _deleted',
+        dbf_labels => 'AREA PERIMETER EAS_ EAS_ID ATLAS_P ATLAS_S EDLOW EDMED EDHIGH HHNUMBER AVGHHINC EDUC POTENT ELAT ELON DIS58 DIS130 DIS208 DIS425 MKTSHR58 MKTSHR130 MKTSHR208 MKTSHR425 LIFESTYLES CUMMKTSHR PENTRA OPPT PRFEDEA AA _deleted',
     },
     rivers  => {
         object     => undef,
@@ -175,7 +176,7 @@ our %data = (
         m_max      => undef,
         z_min      => undef,
         z_max      => undef,
-        dbf_labels => 'ADMN_CLASS LENGTH ROUTE RTE_NUM1 RTE_NUM2 TOLL_RD TYPE _deleted',
+        dbf_labels => 'LENGTH TYPE ADMN_CLASS TOLL_RD RTE_NUM1 RTE_NUM2 ROUTE _deleted',
     },
     roads_rt  => {
         object     => undef,

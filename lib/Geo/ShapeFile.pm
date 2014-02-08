@@ -1,4 +1,5 @@
 package Geo::ShapeFile;
+
 use strict;
 use warnings;
 use Carp;
@@ -871,6 +872,11 @@ Returns the name of the type associated with the given type id number.
 
 Takes an array of Geo::ShapeFile::Shape objects, and returns a hash, with
 keys of x_min,y_min,x_max,y_max, with the values for each of those ranges.
+
+=item get_dbf_field_names()
+
+Returns an array of the field names in the dbf file, in file order.
+Returns an array reference if used in scalar context.  
 
 =back
 

@@ -1,6 +1,9 @@
 # $Revision: 2.0 $
-use Test::More tests => 18651;
+use Test::More tests => 18664;
 use strict;
+use warnings;
+use rlib '../lib', './lib';
+
 BEGIN {
 	use_ok('Geo::ShapeFile');
 	use_ok('Geo::ShapeFile::Shape');
@@ -10,9 +13,10 @@ BEGIN {
 	use_ok('Data::Dumper');
 };
 
-use rlib;
 
 my $dir = "t/test_data";
+
+note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
 my %data = %Geo::ShapeFile::TestHelpers::data;
@@ -49,11 +53,17 @@ foreach my $pts (@test_points) {
 	cmp_ok("$p2", 'eq', $txt);
 }
 
-foreach my $base (keys %data) {
+foreach my $base (sort keys %data) {
 	foreach my $ext (qw/dbf shp shx/) {
 		ok(-f "$dir/$base.$ext", "$ext file exists for $base");
 	}
 	my $obj = $data{$base}->{object} = Geo::ShapeFile->new("$dir/$base");
+	
+	my @expected_fld_names = grep {$_ ne '_deleted'} split /\s+/, $data{$base}{dbf_labels};
+	my @got_fld_names = $obj->get_dbf_field_names;
+	
+	is_deeply (\@expected_fld_names, \@got_fld_names, "got expected field names for $base");
+	
 
 	# test SHP
 	cmp_ok(
@@ -157,13 +167,15 @@ SWL 2014-02-08 This is dead code?
 		ok(my $dbf = $obj->get_dbf_record($n), "$base($n) read dbf record");
 	}
 
+	#  This is possibly redundant due to get_dbf_field_names check above,
+	#  although it does not check all records.
+	my @expected_flds = sort split (/ /, $data{$base}->{dbf_labels});
 	for my $n (1 .. $obj->records()) {
 		my %record = $obj->get_dbf_record($n);
-		cmp_ok(
-			join(' ',sort keys %record),
-			'eq',
-			$data{$base}->{dbf_labels},
-			"dbf has correct labels",
+		is_deeply (
+			[sort keys %record],
+			\@expected_flds,
+			"dbf has correct labels, $base, record $n",
 		);
 	}
 }
