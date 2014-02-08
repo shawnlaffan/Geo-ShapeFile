@@ -1,3 +1,5 @@
+package Geo::ShapeFile::TestHelpers;
+
 our %data = (
 	anno	=> {
 		object		=> undef,

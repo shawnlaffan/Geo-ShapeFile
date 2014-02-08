@@ -12,8 +12,9 @@ BEGIN {
 
 my $dir = "t/test_data";
 
-our %data;
-require "t/test_data.pl";
+use test_data;
+my %data = 
+
 
 my @test_points = (
 	['1','1'],
@@ -26,12 +27,13 @@ my @test_points = (
 	['2.2351362','1.2315236216236','54311'],
 );
 
-foreach(@test_points) {
-	my($x,$y,$m,$z) = @{$_};
+foreach my $pts (@test_points) {
+	my ($x,$y,$m,$z) = @$pts;
 	my $txt;
+
 	if(defined $z && defined $m) {
 		$txt = "Point(X=$x,Y=$y,Z=$z,M=$m)";
-	} elsif(defined $m) {
+	} elsif (defined $m) {
 		$txt = "Point(X=$x,Y=$y,M=$m)";
 	} else {
 		$txt = "Point(X=$x,Y=$y)";
@@ -66,6 +68,7 @@ foreach my $base (keys %data) {
 	);
 
 =pod
+SWL 2014-02-08 This is dead code?
 	foreach my $measure (qw/x y z m/) {
 		foreach my $minmax (qw/min max/) {
 			my $var = join('_',$measure,$minmax);
