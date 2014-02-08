@@ -39,9 +39,11 @@ foreach my $pts (@test_points) {
 
     if(defined $z && defined $m) {
         $txt = "Point(X=$x,Y=$y,Z=$z,M=$m)";
-    } elsif (defined $m) {
+    }
+    elsif (defined $m) {
         $txt = "Point(X=$x,Y=$y,M=$m)";
-    } else {
+    }
+    else {
         $txt = "Point(X=$x,Y=$y)";
     }
     my $p1 = Geo::ShapeFile::Point->new(X => $x, Y => $y, Z => $z, M => $m);
@@ -88,7 +90,8 @@ SWL 2014-02-08 This is dead code?
             #diag(sprintf("*- %100.200e\n",$obj->$var()));
             if($data{$base}->{$var} == $obj->$var()) {
                 pass();
-            } else {
+            }
+	    else {
                 fail();
             }
             cmp_ok(

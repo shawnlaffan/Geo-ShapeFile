@@ -80,7 +80,8 @@ sub add_point {
         if($point->isa("Geo::ShapeFile::Point")) {
             push(@{$self->{shp_points}}, $point);
         }
-    } else {
+    }
+    else {
         my %point_opts = @_;
 
         push(@{$self->{shp_points}}, Geo::ShapeFile::Point->new(%point_opts));
@@ -376,10 +377,12 @@ sub parts {
     if(wantarray) {
         if($parts) {
             return @{$parts};
-        } else {
+        }
+	else {
             return ();
         }
-    } else {
+    }
+    else {
         return $parts;
     }
 }
@@ -392,10 +395,12 @@ sub points {
     if(wantarray) {
         if($points) {
             return @{$points};
-        } else {
+        }
+	else {
             return ();
         }
-    } else {
+    }
+    else {
         return $points;
     }
 }
@@ -493,7 +498,8 @@ sub contains_point {
                 my $isl = $x1*$y2 - $y1*$x2;
                 if ( $y2 > $y1 ) {
                     --$a if $isl > 0;
-                } else {
+                }
+		else {
                     ++$a if $isl < 0;
                 }
             }
@@ -525,7 +531,8 @@ sub vertex_centroid {
     my @points = ();
     if($part) {
         @points = $self->get_part($part);
-    } else {
+    }
+    else {
         @points = $self->points;
     }
 
@@ -548,7 +555,8 @@ sub area_centroid {
     my @parts = ();
     if ( defined( $part ) ) {
         @parts = ( $part );
-    } else {
+    }
+    else {
         @parts = 1 .. $self->num_parts;
     }
     for my $part ( @parts ) {

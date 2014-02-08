@@ -39,17 +39,18 @@ sub var {
 
     if(@_) {
         return $self->{$var} = shift;
-    } else {
+    }
+    else {
         return $self->{$var};
     }
 }
 
+#  these could be factory generated
 sub X { shift()->var('X',@_); }
 sub Y { shift()->var('Y',@_); }
 sub Z { shift()->var('Z',@_); }
 sub M { shift()->var('M',@_); }
 
-# TODO - document these
 sub x_min { shift()->var('X'); }
 sub x_max { shift()->var('X'); }
 sub y_min { shift()->var('Y'); }
@@ -107,9 +108,11 @@ sub angle_to {
     my $dp = $p2 - $p1;
     if($dp->Y && $dp->X) {  # two distinct points
         return rad2deg( atan( $dp->Y / $dp->X ) );
-    } elsif($dp->Y) {       # same X value
+    }
+    elsif($dp->Y) {       # same X value
         return $dp->Y > 0 ? 90 : -90;
-    } else {                # same point
+    }
+    else {                # same point
         return 0;
     }
 }
@@ -138,7 +141,8 @@ sub mathemagic {
 
     unless(defined &{$function}) {
         croak "Don't know how to $op $left and $right";
-    } else {
+    }
+    else {
         no strict 'refs';
         return $function->($l,$r);
     }
