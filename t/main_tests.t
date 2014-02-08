@@ -70,7 +70,7 @@ foreach my $base (sort keys %data) {
     # test SHP
     cmp_ok (
         $obj->shape_type_text(),
-	'eq',
+        'eq',
         $data{$base}->{shape_type},
         "Shape type for $base",
     );
@@ -91,7 +91,7 @@ SWL 2014-02-08 This is dead code?
             if($data{$base}->{$var} == $obj->$var()) {
                 pass();
             }
-	    else {
+            else {
                 fail();
             }
             cmp_ok(
