@@ -1,4 +1,4 @@
-Geo/ShapeFile version 2.52
+Geo/ShapeFile version 2.53
 ==========================
 
 Geo::ShapeFile is a perl library for reading ESRI shape files (such as
@@ -33,7 +33,9 @@ Some example scripts (hopefully documented) can be found in the eg/ directory.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2000-2007 Jason Kohles
+Copyright (C) 2000-2013 Jason Kohles
+Copyright (C) 2014      Shawn Laffan
+
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
