@@ -23,11 +23,11 @@ sub new {
         shp            => 1,
         dbf            => 1,
         shx            => 1,
-        has_shx        => 0,
-        has_shp        => 0,
-        has_dbf        => 0,
         shapes_in_area => 1,
     };
+    $self->{has_shx} = 0;
+    $self->{has_shp} = 0;
+    $self->{has_dbf} = 0;
 
     bless $self, $class;
 
@@ -482,6 +482,7 @@ sub records {
         return $self->{dbf_num_records};
     }
 
+    return 0;
 }
 
 sub shape_type_text {
@@ -861,6 +862,7 @@ Returns the shape type of the current shp/shx file (see shape_type()), but
 as the human-readable string type, rather than an integer.
 
 =item get_shx_record($record_index)
+
 =item get_shx_record_header($record_index)
 
 Get the contents of an shx record or record header (for compatibility with

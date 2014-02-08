@@ -1,5 +1,5 @@
 # $Revision: 2.0 $
-use Test::More tests => 18664;
+use Test::More tests => 18675;
 use strict;
 use warnings;
 use rlib '../lib', './lib';
@@ -19,7 +19,7 @@ my $dir = "t/test_data";
 note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
-my %data = %Geo::ShapeFile::TestHelpers::data;
+my %data = Geo::ShapeFile::TestHelpers::get_data();
 
 
 my @test_points = (
@@ -181,4 +181,12 @@ SWL 2014-02-08 This is dead code?
             "dbf has correct labels, $base, record $n",
         );
     }
+}
+
+
+{
+    my $empty_dbf = Geo::ShapeFile::TestHelpers::get_empty_dbf();
+    my $obj = Geo::ShapeFile->new($empty_dbf);
+    my $records = $obj->records;
+    is ($records, 0, 'empty dbf file has zero records');
 }
