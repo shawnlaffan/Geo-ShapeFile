@@ -49,8 +49,8 @@ foreach my $pts (@test_points) {
 	print "p1=$p1\n";
 	print "p2=$p2\n";
 	cmp_ok($p1, '==', $p2, "Points match");
-	cmp_ok("$p1", 'eq', $txt);
-	cmp_ok("$p2", 'eq', $txt);
+	is ($p1, $txt);
+	is ($p2, $txt);
 }
 
 foreach my $base (sort keys %data) {
@@ -66,9 +66,8 @@ foreach my $base (sort keys %data) {
 	
 
 	# test SHP
-	cmp_ok(
+	is (
 		$obj->shape_type_text(),
-		'eq',
 		$data{$base}->{shape_type},
 		"Shape type for $base",
 	);
