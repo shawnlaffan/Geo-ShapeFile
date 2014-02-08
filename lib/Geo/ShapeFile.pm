@@ -348,22 +348,22 @@ sub m_max { shift()->get_shp_shx_header_value('m_max'); }
 sub upper_left_corner {
     my $self = shift;
 
-    return new Geo::ShapeFile::Point(X => $self->x_min, Y => $self->y_min);
+    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_min);
 }
 sub upper_right_corner {
     my $self = shift;
 
-    return new Geo::ShapeFile::Point(X => $self->x_max, Y => $self->y_min);
+    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_min);
 }
 sub lower_right_corner {
     my $self = shift;
 
-    return new Geo::ShapeFile::Point(X => $self->x_max, Y => $self->y_max);
+    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_max);
 }
 sub lower_left_corner {
     my $self = shift;
 
-    return new Geo::ShapeFile::Point(X => $self->x_min, Y => $self->y_max);
+    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_max);
 }
 
 sub height {
@@ -506,7 +506,7 @@ sub shapes_in_area {
                     ? unpack( 'dd', $bytes )
                     : reverse( unpack( 'dd', scalar( reverse( $bytes ) ) ) )
             );
-            my $pt = new Geo::ShapeFile::Point(X => $x, Y => $y);
+            my $pt = Geo::ShapeFile::Point->new(X => $x, Y => $y);
             if($self->area_contains_point($pt,@area)) {
                 push(@results,$_);
             }
@@ -584,7 +584,7 @@ sub get_shp_record {
 
         my $record = $self->get_bytes('shp',$offset*2,($content_length*2)+8);
 
-        $shape = new Geo::ShapeFile::Shape();
+        $shape = Geo::ShapeFile::Shape->new();
         $shape->parse_shp($record);
         $self->cache('shp',$entry,$shape);
     }
@@ -601,7 +601,7 @@ sub get_handle {
 
     my $han = $which."_handle";
     unless($self->{$han}) {
-        $self->{$han} = new IO::File;
+        $self->{$han} = IO::File->new;
         my $file = join('.', $self->{filebase},$which);
         unless($self->{$han}->open($file, O_RDONLY | O_BINARY)) {
             croak "Couldn't get file handle for $file: $!";
@@ -693,7 +693,7 @@ Geo::ShapeFile - Perl extension for handling ESRI GIS Shapefiles.
 
   use Geo::ShapeFile;
 
-  my $shapefile = new Geo::ShapeFile("roads");
+  my $shapefile = Geo::ShapeFile->new('roads');
 
   for(1 .. $shapefile->shapes()) {
     my $shape = $shapefile->get_shp_record($_);
@@ -723,7 +723,7 @@ base) formats.
 Creates a new shapefile object, the only argument it takes is the basename
 for your data (don't include the extension, the module will automatically
 find the extensions it supports).  For example if you have data files called
-roads.shp, roads.shx, and roads.dbf, use 'new Geo::ShapeFile("roads");' to
+roads.shp, roads.shx, and roads.dbf, use 'Geo::ShapeFile->new("roads");' to
 create a new object, and the module will load the data it needs from the
 files as it needs it.
 
