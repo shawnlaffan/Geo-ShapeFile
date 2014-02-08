@@ -876,7 +876,9 @@ Jason Kohles, E<lt>email@jasonkohles.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002,2003 by Jason Kohles
+Copyright 2002-2013 by Jason Kohles
+Copyright 2014 by Shawn Laffan
+
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
