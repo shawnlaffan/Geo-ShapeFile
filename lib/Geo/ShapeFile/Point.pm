@@ -7,19 +7,19 @@ use Carp;
 our $VERSION = '2.53';
 
 use overload
-	'=='	=> 'eq',
-	'eq'	=> 'eq',
-	'""'	=> 'stringify',
-	'+'		=> \&add,
-	'-'		=> \&subtract,
-	'*'		=> \&multiply,
-	'/'		=> \&divide,
+    '==' => 'eq',
+    'eq' => 'eq',
+    '""' => 'stringify',
+    '+'  => \&add,
+    '-'  => \&subtract,
+    '*'  => \&multiply,
+    '/'  => \&divide,
     fallback    => 1
 ;
 
 my %config = (
-	comp_includes_z		=> 1,
-	comp_includes_m		=> 1,
+    comp_includes_z => 1,
+    comp_includes_m => 1,
 );
 
 sub new {
@@ -34,14 +34,14 @@ sub new {
 }
 
 sub var {
-	my $self = shift;
-	my $var = shift;
+    my $self = shift;
+    my $var = shift;
 
-	if(@_) {
-		return $self->{$var} = shift;
-	} else {
-		return $self->{$var};
-	}
+    if(@_) {
+        return $self->{$var} = shift;
+    } else {
+        return $self->{$var};
+    }
 }
 
 sub X { shift()->var('X',@_); }
@@ -60,58 +60,58 @@ sub m_min { shift()->var('M'); }
 sub m_max { shift()->var('M'); }
 
 sub import {
-	my $self = shift;
-	my %args = @_;
+    my $self = shift;
+    my %args = @_;
 
-	foreach(keys %args) { $config{$_} = $args{$_}; }
+    foreach(keys %args) { $config{$_} = $args{$_}; }
 }
 
 sub eq {
-	my $left = shift;
-	my $right = shift;
+    my $left  = shift;
+    my $right = shift;
 
-	if($config{comp_includes_z} && (defined $left->Z || defined $right->Z)) {
+    if($config{comp_includes_z} && (defined $left->Z || defined $right->Z)) {
         return 0 unless defined $left->Z && defined $right->Z;
-		return 0 unless $left->Z == $right->Z;
-	}
-	if($config{comp_includes_m} && (defined $left->M || defined $right->M)) {
+        return 0 unless $left->Z == $right->Z;
+    }
+    if($config{comp_includes_m} && (defined $left->M || defined $right->M)) {
         return 0 unless defined $left->M && defined $right->M;
-		return 0 unless $left->M == $right->M;
-	}
-	return ($left->X == $right->X && $left->Y == $right->Y);
+        return 0 unless $left->M == $right->M;
+    }
+    return ($left->X == $right->X && $left->Y == $right->Y);
 }
 
 sub stringify {
-	my $self = shift;
+    my $self = shift;
 
-	my @foo = ();
-	foreach(qw/X Y Z M/) {
-		if(defined $self->$_()) {
-			push(@foo,"$_=".$self->$_());
-		}
-	}
-	my $r = "Point(".join(',',@foo).")";
+    my @foo = ();
+    foreach(qw/X Y Z M/) {
+        if(defined $self->$_()) {
+            push(@foo,"$_=".$self->$_());
+        }
+    }
+    my $r = "Point(".join(',',@foo).")";
 }
 
 sub distance_from {
-	my($p1,$p2) = @_;
+    my($p1,$p2) = @_;
 
-	my $dp = $p2->subtract($p1);
-	sqrt( ($dp->X ** 2) + ($dp->Y **2) );
+    my $dp = $p2->subtract($p1);
+    sqrt( ($dp->X ** 2) + ($dp->Y **2) );
 }
 sub distance_to { distance_from(@_); }
 
 sub angle_to {
-	my($p1,$p2) = @_;
+    my($p1,$p2) = @_;
 
-	my $dp = $p2 - $p1;
-	if($dp->Y && $dp->X) {	# two distinct points
-		return rad2deg( atan( $dp->Y / $dp->X ) );
-	} elsif($dp->Y) {		# same X value
-		return $dp->Y > 0 ? 90 : -90;
-	} else {				# same point
-		return 0;
-	}
+    my $dp = $p2 - $p1;
+    if($dp->Y && $dp->X) {  # two distinct points
+        return rad2deg( atan( $dp->Y / $dp->X ) );
+    } elsif($dp->Y) {       # same X value
+        return $dp->Y > 0 ? 90 : -90;
+    } else {                # same point
+        return 0;
+    }
 }
 
 sub add { mathemagic('add',@_); }
@@ -120,132 +120,132 @@ sub multiply { mathemagic('multiply',@_); }
 sub divide { mathemagic('divide',@_); }
 
 sub mathemagic {
-	my($op,$l,$r,$reverse) = @_;
+    my ($op, $l, $r, $reverse) = @_;
 
-	if($reverse) { ($l,$r) = ($r,$l); } # put them back in the right order
-	my($left,$right);
+    if ($reverse) { ($l, $r) = ($r, $l); } # put them back in the right order
+    my ($left, $right);
 
-	if(UNIVERSAL::isa($l,"Geo::ShapeFile::Point")) { $left = 'point'; }
-	if(UNIVERSAL::isa($r,"Geo::ShapeFile::Point")) { $right = 'point'; }
+    if (UNIVERSAL::isa($l,"Geo::ShapeFile::Point")) { $left = 'point'; }
+    if (UNIVERSAL::isa($r,"Geo::ShapeFile::Point")) { $right = 'point'; }
 
-	if($l =~ /^[\d\.]+$/) { $left = 'number'; }
-	if($r =~ /^[\d\.]+$/) { $right = 'number'; }
+    if ($l =~ /^[\d\.]+$/) { $left  = 'number'; }
+    if ($r =~ /^[\d\.]+$/) { $right = 'number'; }
 
-	unless($left) { croak "Couldn't identify $l for $op"; }
-	unless($right) { croak "Couldn't identify $r for $op"; }
+    unless ($left)  { croak "Couldn't identify $l for $op"; }
+    unless ($right) { croak "Couldn't identify $r for $op"; }
 
-	my $function = join('_',$op,$left,$right);
+    my $function = join('_',$op,$left,$right);
 
-	unless(defined &{$function}) {
-		croak "Don't know how to $op $left and $right";
-	} else {
-		no strict 'refs';
-		return $function->($l,$r);
-	}
+    unless(defined &{$function}) {
+        croak "Don't know how to $op $left and $right";
+    } else {
+        no strict 'refs';
+        return $function->($l,$r);
+    }
 }
 
 sub add_point_point {
-	my($p1,$p2) = @_;
+    my ($p1, $p2) = @_;
 
-	my $z;
-	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z + $p1->Z); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p2->X + $p1->X),
-		Y => ($p2->Y + $p1->Y),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z + $p1->Z); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p2->X + $p1->X),
+        Y => ($p2->Y + $p1->Y),
+        Z => $z,
+    );
 }
 
 sub add_point_number {
-	my($p1,$n) = @_;
+    my ($p1, $n) = @_;
 
-	my $z;
-	if(defined($p1->Z)) { $z = ($p1->Z + $n); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p1->X + $n),
-		Y => ($p1->Y + $n),
-		Z => $z,
-	);
+    my $z;
+    if (defined($p1->Z)) { $z = ($p1->Z + $n); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p1->X + $n),
+        Y => ($p1->Y + $n),
+        Z => $z,
+    );
 }
 sub add_number_point { add_point_number(@_); }
 
 sub subtract_point_point {
-	my($p1,$p2) = @_;
+    my($p1,$p2) = @_;
 
-	my $z;
-	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z - $p1->Z); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p2->X - $p1->X),
-		Y => ($p2->Y - $p1->Y),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z - $p1->Z); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p2->X - $p1->X),
+        Y => ($p2->Y - $p1->Y),
+        Z => $z,
+    );
 }
 sub subtract_point_number {
-	my($p1,$n) = @_;
+    my($p1,$n) = @_;
 
-	my $z;
-	if(defined($p1->Z)) { $z = ($p1->Z - $n); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p1->X - $n),
-		Y => ($p1->Y - $n),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p1->Z)) { $z = ($p1->Z - $n); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p1->X - $n),
+        Y => ($p1->Y - $n),
+        Z => $z,
+    );
 }
 sub subtract_number_point { subtract_point_number(reverse @_); }
 
 sub multiply_point_point {
-	my($p1,$p2) = @_;
+    my($p1,$p2) = @_;
 
-	my $z;
-	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z * $p1->Z); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p2->X * $p1->X),
-		Y => ($p2->Y * $p1->Y),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z * $p1->Z); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p2->X * $p1->X),
+        Y => ($p2->Y * $p1->Y),
+        Z => $z,
+    );
 }
 sub multiply_point_number {
-	my($p1,$n) = @_;
+    my($p1,$n) = @_;
 
-	my $z;
-	if(defined($p1->Z)) { $z = ($p1->Z * $n); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p1->X * $n),
-		Y => ($p1->Y * $n),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p1->Z)) { $z = ($p1->Z * $n); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p1->X * $n),
+        Y => ($p1->Y * $n),
+        Z => $z,
+    );
 }
 sub multiply_number_point { multiply_point_number(reverse @_); }
 
 sub divide_point_point {
-	my($p1,$p2) = @_;
+    my($p1,$p2) = @_;
 
-	my $z;
-	if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z / $p1->Z); }
-		
-	Geo::ShapeFile::Point->new(
-		X => ($p2->X / $p1->X),
-		Y => ($p2->Y / $p1->Y),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z / $p1->Z); }
+        
+    Geo::ShapeFile::Point->new(
+        X => ($p2->X / $p1->X),
+        Y => ($p2->Y / $p1->Y),
+        Z => $z,
+    );
 }
 sub divide_point_number {
-	my($p1,$n) = @_;
+    my($p1,$n) = @_;
 
-	my $z;
-	if(defined($p1->Z)) { $z = ($p1->Z / $n); }
-	
-	Geo::ShapeFile::Point->new(
-		X => ($p1->X / $n),
-		Y => ($p1->Y / $n),
-		Z => $z,
-	);
+    my $z;
+    if(defined($p1->Z)) { $z = ($p1->Z / $n); }
+    
+    Geo::ShapeFile::Point->new(
+        X => ($p1->X / $n),
+        Y => ($p1->Y / $n),
+        Z => $z,
+    );
 }
 sub divide_number_point { divide_point_number(reverse @_); }
 
