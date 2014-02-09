@@ -419,16 +419,18 @@ sub corners {
 }
 
 sub area_contains_point {
-    my $self = shift;
+    my $self  = shift;
     my $point = shift;
+
     my ($x_min, $y_min, $x_max, $y_max) = @_;
 
-    return (
+    my $result =
         ($point->X >= $x_min) &&
         ($point->X <= $x_max) &&
         ($point->Y >= $y_min) &&
-        ($point->Y <= $y_max)
-    );
+        ($point->Y <= $y_max);
+
+    return $result;
 }
 
 sub bounds_contains_point {

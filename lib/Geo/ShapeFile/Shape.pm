@@ -464,7 +464,7 @@ sub m_min { shift()->{shp_m_min}; }
 sub m_max { shift()->{shp_m_max}; }
 
 sub has_point {
-    my $self = shift;
+    my $self  = shift;
     my $point = shift;
 
     return 0 if !$self->bounds_contains_point($point);
@@ -720,7 +720,7 @@ as contained in it's header information.
 
 =item has_point($point)
 
-Returns true if the point provided is one of the points in the shape.  Note
+Returns true if the point object provided matches one of the points in the shape.  Note
 that this does a simple comparison with the points that make up the shape, it
 will not find a point that falls along a vertex between two points in the
 shape.  See the L<Geo::ShapeFile::Point> documentation for a note about how

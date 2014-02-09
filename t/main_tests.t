@@ -18,6 +18,7 @@ note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
 
+#test_end_point_slope();
 test_shapepoint();
 test_files();
 test_empty_dbf();
@@ -63,19 +64,39 @@ sub test_shapepoint {
     }
     
     #  test some angles
-    #foreach my $p1 (@pnt_objects[0..3]) {
-    #    foreach my $p2 (@pnt_objects[0..3]) {
-    #        my $angle = $p1->angle_to ($p2);
-    #        print "$p1 to $p2 is $angle\n";
-    #    }
-    #}
+    foreach my $p1 (@pnt_objects[0..3]) {
+        foreach my $p2 (@pnt_objects[0..3]) {
+            my $angle = $p1->angle_to ($p2);
+            print "$p1 to $p2 is $angle\n";
+        }
+    }
     
+}
+
+sub test_end_point_slope {
+    return;  #  no testing yet - ths was used for debug
+
+    my %data  = Geo::ShapeFile::TestHelpers::get_data();
+    my %data2 = (drainage => $data{drainage});
+    %data = %data2;
+
+    my $obj = Geo::ShapeFile->new("$dir/drainage");
+    my $shape = $obj->get_shp_record(1);
+    my $start_pt = Geo::ShapeFile::Point->new(X => $shape->x_min(), Y => $shape->y_min());
+    my $end_pt   = Geo::ShapeFile::Point->new(X => $shape->x_min(), Y => $shape->y_max());
+    my $hp = $shape->has_point($start_pt);
+    
+    printf
+        "%i : %i\n",
+        $shape->has_point($start_pt),
+        $shape->has_point($end_pt);
+    print;
 }
 
 
 sub test_files {
     my %data = Geo::ShapeFile::TestHelpers::get_data();
-    
+
     foreach my $base (sort keys %data) {
         foreach my $ext (qw/dbf shp shx/) {
             ok(-f "$dir/$base.$ext", "$ext file exists for $base");
