@@ -38,10 +38,11 @@ sub test_shapepoint {
         ['2.2351362','1.2315236216236','54311'],
     );
 
+    my @pnt_objects;
     foreach my $pts (@test_points) {
         my ($x,$y,$m,$z) = @$pts;
         my $txt;
-    
+
         if(defined $z && defined $m) {
             $txt = "Point(X=$x,Y=$y,Z=$z,M=$m)";
         }
@@ -58,7 +59,17 @@ sub test_shapepoint {
         cmp_ok ( $p1, '==', $p2, "Points match");
         cmp_ok ("$p1", 'eq', $txt);
         cmp_ok ("$p2", 'eq', $txt);
+        push @pnt_objects, $p1;
     }
+    
+    #  test some angles
+    #foreach my $p1 (@pnt_objects[0..3]) {
+    #    foreach my $p2 (@pnt_objects[0..3]) {
+    #        my $angle = $p1->angle_to ($p2);
+    #        print "$p1 to $p2 is $angle\n";
+    #    }
+    #}
+    
 }
 
 
