@@ -87,9 +87,7 @@ sub cache {
 
     return if !$self->caching($type);
 
-    #  SWL:  this $@ check will never trigger?
-    #  typo for @_?
-    if ($@) {
+    if (@_) {
         $self->{_object_cache}->{$type}->{$obj} = shift;
     }
     return $self->{_object_cache}->{$type}->{$obj};
