@@ -107,7 +107,7 @@ sub distance_to { distance_from(@_); }
 sub angle_to {
     my ($p1, $p2) = @_;
 
-    my $dp = $p2 - $p1;
+    my $dp = $p2->subtract ($p1);
 
     #  could use atan2 here, surely?
     if ($dp->Y) {
@@ -131,7 +131,9 @@ sub divide {   mathemagic('divide',   @_); }
 sub mathemagic {
     my ($op, $l, $r, $reverse) = @_;
 
-    if ($reverse) { ($l, $r) = ($r, $l); } # put them back in the right order
+    if ($reverse) {  # put them back in the right order
+        ($l, $r) = ($r, $l);
+    }
     my ($left, $right);
 
     if (UNIVERSAL::isa($l, 'Geo::ShapeFile::Point')) { $left  = 'point'; }
@@ -187,11 +189,12 @@ sub subtract_point_point {
     my $z;
     if(defined($p2->Z) && defined($p1->Z)) { $z = ($p2->Z - $p1->Z); }
 
-    Geo::ShapeFile::Point->new(
-        X => ($p2->X - $p1->X),
-        Y => ($p2->Y - $p1->Y),
+    my $result = Geo::ShapeFile::Point->new(
+        X => ($p1->X - $p2->X),
+        Y => ($p1->Y - $p2->Y),
         Z =>  $z,
     );
+    return $result;
 }
 sub subtract_point_number {
     my($p1, $n) = @_;
@@ -244,12 +247,12 @@ sub divide_point_point {
 
     my $z;
     if (defined $p2->Z and defined $p1->Z) {
-        $z = $p2->Z / $p1->Z;
+        $z = $p1->Z / $p2->Z;
     }
 
     Geo::ShapeFile::Point->new(
-        X => ($p2->X / $p1->X),
-        Y => ($p2->Y / $p1->Y),
+        X => ($p1->X / $p2->X),
+        Y => ($p1->Y / $p2->Y),
         Z =>  $z,
     );
 }
