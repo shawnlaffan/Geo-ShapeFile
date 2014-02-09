@@ -625,7 +625,7 @@ sub get_shp_record {
 
         $shape = Geo::ShapeFile::Shape->new();
         $shape->parse_shp($record);
-        $self->cache('shp', $entry,$shape);
+        $self->cache('shp', $entry, $shape);
     }
 
     return $shape;
@@ -713,6 +713,8 @@ sub find_bounds {
     my $self    = shift;
     my @objects = @_;
 
+    return if !scalar @objects;
+
     #  could assign values from first object to avoid defined call below
     my %bounds = (
         x_min => undef,
@@ -721,7 +723,10 @@ sub find_bounds {
         y_max => undef,
     );
 
+  OBJECT:
     foreach my $obj (@objects) {
+        next OBJECT if !defined $obj->x_max();  # should this ever happen?  (it does, though)
+
         foreach ('x_min', 'y_min') {
             if ( (!defined $bounds{$_}) || ($obj->$_() < $bounds{$_})) {
                 $bounds{$_} = $obj->$_();

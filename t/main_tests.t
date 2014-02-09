@@ -135,6 +135,19 @@ sub test_files {
         };
 
         ok($nulls == $data{$base}->{nulls});
+        
+        #  need to test the bounds
+        my @shapes_in_file;
+        for my $n (1 .. $obj->shapes()) {
+            push @shapes_in_file, $obj->get_shp_record($n);
+        }
+
+        #if (scalar @shapes_in_file) {
+            my %bounds = $obj->find_bounds(@shapes_in_file);
+            for my $bnd (qw /x_min y_min x_max y_max/) {
+                is ($bounds{$bnd}, $data{$base}{$bnd}, "$bnd across objects matches, $base");
+            }
+        #}
 
         # test DBF
         ok($obj->{dbf_version} == 3, "dbf version 3");

@@ -47,10 +47,10 @@ sub parse_shp {
 
     $self->{source} = $self->{shp_data} = shift;
 
-    $self->extract_ints('big','shp_record_number','shp_content_length');
-    $self->extract_ints('little','shp_shape_type');
+    $self->extract_ints('big', 'shp_record_number', 'shp_content_length');
+    $self->extract_ints('little', 'shp_shape_type');
 
-    my $parser = "parse_shp_".$self->type($self->{shp_shape_type});
+    my $parser = 'parse_shp_' . $self->type($self->{shp_shape_type});
 
     croak "Can't parse shape_type $self->{shp_shape_type}"
       if !$self->can($parser);
@@ -109,13 +109,16 @@ sub calculate_bounds {
 
 sub parse_shp_Point {
     my $self = shift;
-
     $self->extract_doubles('shp_X', 'shp_Y');
     $self->{shp_points} = [Geo::ShapeFile::Point->new(
         X => $self->{shp_X},
         Y => $self->{shp_Y},
     )];
     $self->{shp_num_points} = 1;
+    $self->{shp_x_min} = $self->{shp_X};
+    $self->{shp_x_max} = $self->{shp_X};
+    $self->{shp_y_min} = $self->{shp_Y};
+    $self->{shp_y_max} = $self->{shp_Y};
 }
 #  Point
 # Double        X       // X coordinate
@@ -141,11 +144,11 @@ sub parse_shp_Polygon {
     $self->extract_parts_and_points();
 }
 #  Polygon
-# Double[4]                     Box                     // Bounding Box
-# Integer                       NumParts        // Number of Parts
-# Integer                       NumPoints       // Total Number of Points
-# Integer[NumParts]             Parts           // Index to First Point in Part
-# Point[NumPoints]              Points          // Points for All Parts
+# Double[4]          Box        // Bounding Box
+# Integer            NumParts   // Number of Parts
+# Integer            NumPoints  // Total Number of Points
+# Integer[NumParts]  Parts      // Index to First Point in Part
+# Point[NumPoints]   Points     // Points for All Parts
 
 sub parse_shp_MultiPoint {
     my $self = shift;
@@ -155,9 +158,9 @@ sub parse_shp_MultiPoint {
     $self->extract_points($self->{shp_num_points}, 'shp_points');
 }
 #  MultiPoint
-# Double[4]                     Box                     // Bounding Box
-# Integer                       NumPoints       // Number of Points
-# Point[NumPoints]      Points          // The points in the set
+# Double[4]          Box        // Bounding Box
+# Integer            NumPoints  // Number of Points
+# Point[NumPoints]   Points     // The points in the set
 
 sub parse_shp_PointZ {
     my $self = shift;
