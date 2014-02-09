@@ -80,7 +80,7 @@ sub add_point {
 
     if(@_ == 1) {
         my $point = shift;
-        if($point->isa("Geo::ShapeFile::Point")) {
+        if($point->isa('Geo::ShapeFile::Point')) {
             push @{$self->{shp_points}}, $point;
         }
     }
@@ -105,7 +105,7 @@ sub calculate_bounds {
 
     my %bounds = $self->find_bounds($self->points);
     foreach(keys %bounds) {
-        $self->{"shp_".$_} = $bounds{$_};
+        $self->{'shp_' . $_} = $bounds{$_};
     }
     return %bounds;
 }
@@ -652,7 +652,7 @@ Geo::ShapeFile::Shape - Geo::ShapeFile utility class.
 
 =head1 ABSTRACT
 
-  This is a utility class for Geo::ShapeFile that represents shapes.
+  This is a utility class for L<Geo::ShapeFile> that represents shapes.
 
 =head1 DESCRIPTION
 
@@ -670,7 +670,7 @@ None by default.
 =item new()
 
 Creates a new Geo::ShapeFile::Shape object, takes no arguments and returns
-the created object.  Normally Geo::ShapeFile does this for you when you call
+the created object.  Normally L<Geo::ShapeFile> does this for you when you call
 its get_shp_record() method, so you shouldn't need to create a new object.
 (Eventually this module will have support for _creating_ shapefiles rather
 than just reading them, then this method will become important.
@@ -723,7 +723,7 @@ as contained in it's header information.
 Returns true if the point provided is one of the points in the shape.  Note
 that this does a simple comparison with the points that make up the shape, it
 will not find a point that falls along a vertex between two points in the
-shape.  See the Geo::ShapeFile::Point documentation for a note about how
+shape.  See the L<Geo::ShapeFile::Point> documentation for a note about how
 to exclude Z and/or M data from being considered when matching points.
 
 =item contains_point($point);
@@ -775,19 +775,23 @@ and the coordinates of the points in each part of the shape.
 =head1 REPORTING BUGS
 
 Please send any bugs, suggestions, or feature requests to
-  E<lt>geo-shapefile-bugs@jasonkohles.comE<gt>.
+  L<https://github.com/shawnlaffan/Geo-ShapeFile/issues>.
 
 =head1 SEE ALSO
 
-Geo::ShapeFile
+L<Geo::ShapeFile>
 
 =head1 AUTHOR
 
-Jason Kohles, E<lt>email@jasonkohles.com<gt>
+Jason Kohles, E<lt>email@jasonkohles.comE<gt>
+
+Shawn Laffan, E<lt>shawnlaffan@gmail.comE<gt>
+
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2013 by Jason Kohles
+
 Copyright 2014 by Shawn Laffan
 
 This library is free software; you can redistribute it and/or modify

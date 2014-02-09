@@ -105,7 +105,7 @@ sub distance_from {
 sub distance_to { distance_from(@_); }
 
 sub angle_to {
-    my ($p1,$p2) = @_;
+    my ($p1, $p2) = @_;
 
     my $dp = $p2 - $p1;
 
@@ -284,11 +284,11 @@ Geo::ShapeFile::Point - Geo::ShapeFile utility class.
 
 =head1 ABSTRACT
 
-  This is a utility class, used by Geo::ShapeFile.
+  This is a utility class, used by L<Geo::ShapeFile>.
 
 =head1 DESCRIPTION
 
-This is a utility class, used by Geo::ShapeFile to represent point data,
+This is a utility class, used by L<Geo::ShapeFile> to represent point data,
 you should see the Geo::ShapeFile documentation for more information.
 
 =head2 EXPORT
@@ -352,19 +352,23 @@ Returns the angle (in degress) from this point to some other point.  Returns
 =head1 REPORTING BUGS
 
 Please send any bugs, suggestions, or feature requests to
-  E<lt>geo-shapefile-bugs@jasonkohles.comE<gt>.
+  L<https://github.com/shawnlaffan/Geo-ShapeFile/issues>.
 
 =head1 SEE ALSO
 
-Geo::ShapeFile
+L<Geo::ShapeFile>
 
 =head1 AUTHOR
 
-Jason Kohles, E<lt>email@jasonkohles.com<gt>
+Jason Kohles, E<lt>email@jasonkohles.comE<gt>
+
+Shawn Laffan, E<lt>shawnlaffan@gmail.comE<gt>
+
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2013 by Jason Kohles
+
 Copyright 2014 by Shawn Laffan
 
 This library is free software; you can redistribute it and/or modify

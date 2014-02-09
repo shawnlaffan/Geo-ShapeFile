@@ -938,20 +938,26 @@ Returns an array reference if used in scalar context.
 =head1 REPORTING BUGS
 
 Please send any bugs, suggestions, or feature requests to
-  E<lt>geo-shapefile-bugs@jasonkohles.comE<gt>.
+  L<https://github.com/shawnlaffan/Geo-ShapeFile/issues>.
 
 =head1 SEE ALSO
 
-Geo::ShapeFile::Shape
-Geo::ShapeFile::Point
+L<Geo::ShapeFile::Shape>
+L<Geo::ShapeFile::Point>
+L<Geo::Shapefile::Writer>
+L<Geo::GDAL>
 
 =head1 AUTHOR
 
 Jason Kohles, E<lt>email@jasonkohles.comE<gt>
 
+Shawn Laffan, E<lt>shawnlaffan@gmail.comE<gt>
+
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2013 by Jason Kohles
+
 Copyright 2014 by Shawn Laffan
 
 
