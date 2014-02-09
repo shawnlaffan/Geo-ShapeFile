@@ -372,25 +372,25 @@ sub m_max { shift()->get_shp_shx_header_value('m_max'); }
 sub upper_left_corner {
     my $self = shift;
 
-    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_min);
+    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_max);
 }
 
 sub upper_right_corner {
     my $self = shift;
 
-    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_min);
+    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_max);
 }
 
 sub lower_right_corner {
     my $self = shift;
 
-    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_max);
+    return Geo::ShapeFile::Point->new(X => $self->x_max, Y => $self->y_min);
 }
 
 sub lower_left_corner {
     my $self = shift;
 
-    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_max);
+    return Geo::ShapeFile::Point->new(X => $self->x_min, Y => $self->y_min);
 }
 
 sub height {
