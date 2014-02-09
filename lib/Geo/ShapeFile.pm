@@ -737,6 +737,11 @@ sub find_bounds {
     return %bounds;
 }
 
+# XML::Generator::SVG::ShapeFile fails because it is calling this method
+# and it does not exist in 2.52 and earlier
+sub DESTROY {}
+
+
 1;
 __END__
 
