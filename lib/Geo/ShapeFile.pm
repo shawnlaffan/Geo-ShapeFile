@@ -9,6 +9,8 @@ use Config;
 
 our $VERSION = '2.53';
 
+my $is_little_endian = unpack 'b', (pack 'S', 1 );
+
 # Preloaded methods go here.
 sub new {
     my $proto = shift;
@@ -118,7 +120,7 @@ sub read_shx_shp_header {
         $self->{$which . '_z_min'}, $self->{$which . '_z_max'},
         $self->{$which . '_m_min'}, $self->{$which . '_m_max'},
     ) = (
-        (unpack 'b', (pack 'S', 1 ) )
+        $is_little_endian
             ? (unpack 'd8', $doubles )
             : (reverse unpack 'd8', scalar reverse $doubles)
     );
@@ -323,7 +325,7 @@ sub get_dbf_record {
             $self->{dbf_header_length}+($self->{dbf_record_length} * $entry),
             $self->{dbf_record_length}+1, # +1 for deleted flag
         );
-        my ($del, @data) = unpack 'c'. $self->{dbf_record_template}, $record;
+        my ($del, @data) = unpack 'c' . $self->{dbf_record_template}, $record;
 
         map { s/^\s*//; s/\s*$//; } @data;
 
@@ -535,7 +537,7 @@ sub shapes_in_area {
         if ($self->type($type) =~ /^Point/) {
             my $bytes = $self->get_bytes('shp', $offset * 2 +12, 16);
             my ($x, $y) = (
-                (unpack 'b', (pack 'S', 1) )
+                $is_little_endian
                     ? (unpack 'dd', $bytes )
                     : (reverse unpack 'dd', scalar reverse $bytes)
             );
@@ -547,7 +549,7 @@ sub shapes_in_area {
         elsif ($self->type($type) =~ /^(PolyLine|Polygon|MultiPoint|MultiPatch)/) {
             my $bytes = $self->get_bytes('shp',($offset*2)+12,32);
             my @p = (
-                (unpack 'b', (pack 'S', 1) )
+                $is_little_endian
                     ? (unpack 'd4', $bytes )
                     : (reverse unpack 'd4', scalar reverse $bytes )
             );

@@ -8,6 +8,9 @@ use Geo::ShapeFile::Point;
 use parent qw /Geo::ShapeFile/;
 our $VERSION = '2.53';
 
+my $is_little_endian = unpack 'b', (pack 'S', 1 );
+
+
 sub new {
     my $proto = shift;
     my $class = ref ($proto) || $proto;
@@ -320,9 +323,9 @@ sub extract_doubles {
 
     foreach ( @what ) {
         my $tmp = substr $self->{shp_data}, 0, $size, '';
-        $self->{ $_ } = unpack ( 'b', pack( 'S', 1 ) )
-            ? unpack( $template, $tmp )
-            : unpack( $template, scalar( reverse( $tmp ) ) );
+        $self->{ $_ } = $is_little_endian
+            ? (unpack $template, $tmp )
+            : (unpack $template, scalar reverse $tmp );
     }
 }
 
@@ -332,9 +335,9 @@ sub extract_count_doubles {
     my $label = shift;
 
     my $tmp = substr $self->{shp_data}, 0, $count*8, '';
-    my @tmp = unpack( 'b', pack( 'S', 1 ) )
-        ? unpack( 'd'.$count, $tmp )
-        : reverse( unpack( 'd' . $count, scalar ( reverse( $tmp ) ) ) );
+    my @tmp = $is_little_endian
+        ? (unpack 'd'.$count, $tmp )
+        : (reverse unpack( 'd' . $count, scalar ( reverse( $tmp ) ) ) );
 
     $self->{$label} = [@tmp];
 }
@@ -344,15 +347,16 @@ sub extract_points {
     my $count = shift;
     my $label = shift;
 
-    my $data = substr($self->{shp_data},0,$count*16,'');
+    my $data = substr $self->{shp_data}, 0, $count * 16, '';
 
-    my @ps = unpack( 'b', pack( 'S', 1 ) )
-        ? unpack( 'd*', $data )
-        : reverse( unpack( 'd*', scalar( reverse( $data ) ) ) );
+    my @ps = $is_little_endian
+        ? (unpack 'd*', $data )
+        : (reverse unpack 'd*', scalar reverse $data );
 
     my @p = (); # points
     while(@ps) {
-        push(@p, Geo::ShapeFile::Point->new(X => shift(@ps), Y => shift(@ps)));
+        my ($x, $y) = (shift @ps, shift @ps);
+        push @p, Geo::ShapeFile::Point->new(X => $x, Y => $y);
     }
     $self->{$label} = [@p];
 }
