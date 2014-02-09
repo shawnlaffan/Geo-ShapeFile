@@ -394,13 +394,17 @@ sub lower_left_corner {
 sub height {
     my $self = shift;
 
-    return $self->x_max - $self->x_min;
+    return if !$self->records;
+
+    return $self->y_max - $self->y_min;
 }
 
 sub width {
     my $self = shift;
 
-    return $self->y_max - $self->y_min;
+    return if !$self->records;
+
+    return $self->x_max - $self->x_min;
 }
 
 sub corners {

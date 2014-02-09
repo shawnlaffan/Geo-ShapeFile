@@ -142,12 +142,19 @@ sub test_files {
             push @shapes_in_file, $obj->get_shp_record($n);
         }
 
-        #if (scalar @shapes_in_file) {
-            my %bounds = $obj->find_bounds(@shapes_in_file);
-            for my $bnd (qw /x_min y_min x_max y_max/) {
-                is ($bounds{$bnd}, $data{$base}{$bnd}, "$bnd across objects matches, $base");
-            }
-        #}
+        my %bounds = $obj->find_bounds(@shapes_in_file);
+        for my $bnd (qw /x_min y_min x_max y_max/) {
+            is ($bounds{$bnd}, $data{$base}{$bnd}, "$bnd across objects matches, $base");
+        }
+
+        if (defined $data{$base}{y_max}) {
+            is ($obj->height, $data{$base}{y_max} - $data{$base}{y_min}, "$base has correct height");
+            is ($obj->width,  $data{$base}{x_max} - $data{$base}{x_min}, "$base has correct width");
+        }
+        else {
+            is ($obj->height, undef, "$base has correct height");
+            is ($obj->width,  undef, "$base has correct width");
+        }
 
         # test DBF
         ok($obj->{dbf_version} == 3, "dbf version 3");
