@@ -1,4 +1,5 @@
 use ExtUtils::MakeMaker;
+
 WriteMakefile(
     'NAME'          => 'Geo::ShapeFile',
     'VERSION_FROM'  => 'lib/Geo/ShapeFile.pm', # finds $VERSION
@@ -6,12 +7,21 @@ WriteMakefile(
         'Carp'       => 0,
         'IO::File'   => 0,
         'Math::Trig' => 0,
+        'List::Util' => 0,
     },
     BUILD_REQUIRES => {
         rlib         => 0,
     },
-    ($] >= 5.005 ? (
-        ABSTRACT_FROM => 'lib/Geo/ShapeFile.pm',
-        AUTHOR        => 'Jason Kohles <email@jasonkohles.com>',
-    ) : ()),
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources => {
+            repository => {
+                type => 'git',
+                url => 'https://github.com/shawnlaffan/Geo-ShapeFile.git',
+                web => 'https://github.com/shawnlaffan/Geo-ShapeFile',
+            },
+        },
+    },
+    ABSTRACT_FROM => 'lib/Geo/ShapeFile.pm',
+    AUTHOR        => 'Shawn Laffan <shawnlaffan@gmail.com>',
 );
