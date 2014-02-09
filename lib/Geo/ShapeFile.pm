@@ -6,6 +6,7 @@ use Carp;
 use IO::File;
 use Geo::ShapeFile::Shape;
 use Config;
+use List::Util qw /min max/;
 
 our $VERSION = '2.53';
 
@@ -717,29 +718,28 @@ sub find_bounds {
 
     return if !scalar @objects;
 
-    #  could assign values from first object to avoid defined call below
-    my %bounds = (
-        x_min => undef,
-        y_min => undef,
-        x_max => undef,
-        y_max => undef,
-    );
+    my $obj1 = shift @objects;
 
-  OBJECT:
+    #  assign values from first object to start
+    my $x_min = $obj1->x_min();
+    my $y_min = $obj1->y_min();
+    my $x_max = $obj1->x_max();
+    my $y_max = $obj1->y_max();
+
+
     foreach my $obj (@objects) {
-        next OBJECT if !defined $obj->x_max();  # should this ever happen?  (it does, though)
-
-        foreach ('x_min', 'y_min') {
-            if ( (!defined $bounds{$_}) || ($obj->$_() < $bounds{$_})) {
-                $bounds{$_} = $obj->$_();
-            }
-        }
-        foreach ('x_max', 'y_max') {
-            if ( (!defined $bounds{$_}) || ($obj->$_() > $bounds{$_})) {
-                $bounds{$_} = $obj->$_();
-            }
-        }
+        $x_min = min ($x_min, $obj->x_min());
+        $y_min = min ($y_min, $obj->y_min());
+        $x_max = max ($x_max, $obj->x_max());
+        $y_max = max ($y_max, $obj->y_max());
     }
+
+    my %bounds = (
+        x_min => $x_min,
+        y_min => $y_min,
+        x_max => $x_max,
+        y_max => $y_max,
+    );
 
     return %bounds;
 }
