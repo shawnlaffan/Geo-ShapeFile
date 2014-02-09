@@ -28,6 +28,12 @@ t/test_data/drainage.sbn
 t/test_data/drainage.sbx
 t/test_data/drainage.shp
 t/test_data/drainage.shx
+t/test_data/empty_dbf.dbf
+t/test_data/empty_points.dbf
+t/test_data/empty_points.sbn
+t/test_data/empty_points.sbx
+t/test_data/empty_points.shp
+t/test_data/empty_points.shx
 t/test_data/lakes.dbf
 t/test_data/lakes.sbn
 t/test_data/lakes.sbx
