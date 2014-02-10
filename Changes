@@ -1,5 +1,12 @@
 Revision history for Geo::ShapeFile.
 
+2.54 2014-02-11
+    - Shawn Laffan
+    - Fix https://rt.cpan.org/Ticket/Display.html?id=89563
+      Thanks to Daniel Smith for reporting, and also providing an optimisation
+      which also handles edge overlap cases.
+    - Reorganise the test suite to allow running of subsets of tests.
+
 2.53_003 2014-02-10
     - Shawn Laffan
     - Clear up several longstanding RT tickets:
