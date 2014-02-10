@@ -18,6 +18,7 @@ note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
 
+test_corners();
 test_shapes_in_area();
 #test_end_point_slope();
 test_shapepoint();
@@ -317,3 +318,24 @@ sub test_shapes_in_area {
     return;
 }
 
+
+sub test_corners {
+    my $shp = Geo::ShapeFile->new("$dir/lakes");
+
+    my $ul = $shp->upper_left_corner();
+    my $ll = $shp->lower_left_corner();
+    my $ur = $shp->upper_right_corner();
+    my $lr = $shp->lower_right_corner();
+    
+    is ($ul->X, $ll->X,'corners: min x vals');
+    is ($ur->X, $lr->X,'corners: max x vals');
+    is ($ll->Y, $lr->Y,'corners: min y vals');
+    is ($ul->Y, $ur->Y,'corners: max y vals');
+
+    cmp_ok ($ul->X, '<', $ur->X, 'corners: ul is left of ur');
+    cmp_ok ($ll->X, '<', $lr->X, 'corners: ll is left of lr');
+
+    cmp_ok ($ll->Y, '<', $ul->Y, 'corners: ll is below ul');
+    cmp_ok ($lr->Y, '<', $ur->Y, 'corners: lr is below ur');
+
+}
