@@ -11,3 +11,6 @@ MYMETA.yml
 MYMETA.json
 
 .+\.html
+pod2htmd.tmp$
+
+.*\.tar\.gz$

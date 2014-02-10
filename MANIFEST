@@ -1,6 +1,5 @@
 Changes
 eg/shpdump.pl
-Geo-ShapeFile-2.53_001.tar.gz
 lib/Geo/ShapeFile.pm
 lib/Geo/ShapeFile/Point.pm
 lib/Geo/ShapeFile/Shape.pm
@@ -10,7 +9,7 @@ MANIFEST.SKIP
 META.yml			Module meta-data (added by MakeMaker)
 perlcriticrc
 perlcriticrc-conway
-pod2htmd.tmp
+pm_to_blib
 README
 t/lib/Geo/ShapeFile/TestHelpers.pm
 t/main_tests.t

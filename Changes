@@ -1,6 +1,6 @@
 Revision history for Geo::ShapeFile.
 
-2.53_001 2014-02-10
+2.53_003 2014-02-10
     - Shawn Laffan
     - Clear up several longstanding RT tickets:
         - https://rt.cpan.org/Ticket/Display.html?id=46698
