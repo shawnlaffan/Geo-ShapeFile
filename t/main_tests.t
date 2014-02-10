@@ -18,14 +18,36 @@ note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
 
-test_corners();
-test_shapes_in_area();
-#test_end_point_slope();
-test_shapepoint();
-test_files();
-test_empty_dbf();
+#  conditional test runs approach from
+#  http://www.modernperlbooks.com/mt/2013/05/running-named-perl-tests-from-prove.html
 
-done_testing();
+exit main( @ARGV );
+
+sub main {
+    my @args  = @_;
+
+    if (@args) {
+        for my $name (@args) {
+            die "No test method test_$name\n"
+                if not my $func = (__PACKAGE__->can( 'test_' . $name ) || __PACKAGE__->can( $name ));
+            $func->();
+        }
+        done_testing;
+        return 0;
+    }
+
+    test_corners();
+    test_shapes_in_area();
+    #test_end_point_slope();
+    test_shapepoint();
+    test_files();
+    test_empty_dbf();
+    
+    done_testing;
+    return 0;
+}
+
+
 
 ###########################################
 
