@@ -63,6 +63,9 @@ sub test_shapepoint {
         push @pnt_objects, $p1;
     }
     
+    
+    return;
+
     #  test some angles
     foreach my $p1 (@pnt_objects[0..3]) {
         foreach my $p2 (@pnt_objects[0..3]) {

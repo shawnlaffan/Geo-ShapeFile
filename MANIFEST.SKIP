@@ -2,6 +2,8 @@
 
 t/.*\.html
 
+xt/mem_leak_tests
+
 Makefile.old
 MANIFEST.bak
 Makefile

@@ -8,7 +8,7 @@ use Geo::ShapeFile::Shape;
 use Config;
 use List::Util qw /min max/;
 
-our $VERSION = '2.53';
+our $VERSION = '2.53_001';
 
 my $is_little_endian = unpack 'b', (pack 'S', 1 );
 
@@ -350,7 +350,7 @@ sub get_shp_shx_header_value {
     my $self = shift;
     my $val  = shift;
 
-    unless ($self->{'shx_' . $val} || $self->{'shp_' . $val}) {
+    if (!($self->{'shx_' . $val} || $self->{'shp_' . $val})) {
         $self->read_shx_header();
     }
 
@@ -437,7 +437,7 @@ sub bounds_contains_point {
     my $self  = shift;
     my $point = shift;
 
-    return $self->area_contains_point(
+    return $self->area_contains_point (
         $point,
         $self->x_min, $self->y_min,
         $self->x_max, $self->y_max,
@@ -498,20 +498,26 @@ sub shape_type_text {
     return $self->type($self->shape_type());
 }
 
-sub get_shx_record_header { shift()->get_shx_record(@_); }
+sub get_shx_record_header {
+    shift()->get_shx_record(@_);
+}
+
 sub get_shx_record {
-    my $self = shift;
+    my $self  = shift;
     my $entry = shift;
 
-    croak "must specify entry index" unless $entry;
+    croak 'must specify entry index'
+      if !$entry;
 
-    my $shx = $self->cache('shx',$entry);
-    unless($shx) {
-        my $record = $self->get_bytes('shx',(($entry - 1) * 8) + 100,8);
+    my $shx = $self->cache('shx', $entry);
+
+    if (!$shx) {
+        my $record = $self->get_bytes('shx', (($entry - 1) * 8) + 100, 8);
         $shx = [unpack 'N N', $record];
         $self->cache('shx', $entry,$shx);
     }
-    return(@{$shx});
+
+    return @{$shx};
 }
 
 sub get_shp_record_header {
