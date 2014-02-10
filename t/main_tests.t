@@ -250,31 +250,49 @@ sub test_empty_dbf {
 
 sub test_shapes_in_area {
     my $shp = Geo::ShapeFile->new ("$dir/test_shapes_in_area");
-    
-    my @shapes_in_area = $shp->shapes_in_area (1, 1, 11, 11);
 
+    my @shapes_in_area = $shp->shapes_in_area (1, 1, 11, 11);
     is_deeply (
-        \@shapes_in_area,
         [1],
+        \@shapes_in_area,
         'Shape is in area'
     );
 
     @shapes_in_area = $shp->shapes_in_area (11, 11, 12, 12);
-
     is_deeply (
-        \@shapes_in_area,
         [],
+        \@shapes_in_area,
         'Shape is not in area'
     );
 
-    #  Now check with a larger region
-    #  This should get all features
-    my @bounds = (-104, 17, -96, 22);
-    $shp = Geo::ShapeFile->new("$dir/lakes");
+    my @bounds;
+
+    @bounds = (1, -1, 9, 11);
     @shapes_in_area = $shp->shapes_in_area (@bounds);
     is_deeply (
+        [1],
         \@shapes_in_area,
+        'edge overlap on the left, right edge outside bounds',
+    );
+
+
+    @bounds = (0, -1, 9, 11);
+    @shapes_in_area = $shp->shapes_in_area (@bounds);
+    is_deeply (
+        [1],
+        \@shapes_in_area,
+        'left and right edges outside the bounds, upper and lower within',
+    );
+
+    ###  Now check with a larger region
+    $shp = Geo::ShapeFile->new("$dir/lakes");
+
+    #  This should get all features
+    @bounds = (-104, 17, -96, 22);
+    @shapes_in_area = $shp->shapes_in_area (@bounds);
+    is_deeply (
         [1, 2, 3],
+        \@shapes_in_area,
         'All lake shapes in bounds',
     );
     
@@ -282,10 +300,20 @@ sub test_shapes_in_area {
     @bounds = (-104, 17, -100, 22);
     @shapes_in_area = $shp->shapes_in_area (@bounds);
     is_deeply (
-        \@shapes_in_area,
         [1, 2],
+        \@shapes_in_area,
         'Western two lake shapes in bounds',
     );
+    
+    #  the western two features with a partial overlap
+    @bounds = (-104, 17, -101.7314, 22);
+    @shapes_in_area = $shp->shapes_in_area (@bounds);
+    is_deeply (
+        [1, 2],
+        \@shapes_in_area,
+        'Western two lake shapes in bounds, partial overlap',
+    );
 
+    return;
 }
 

@@ -564,9 +564,7 @@ sub shapes_in_area {
                     ? (unpack 'd4', $bytes )
                     : (reverse unpack 'd4', scalar reverse $bytes )
             );
-            #my $in_area_n = $self->check_in_area(@p, @area);
-            #my $in_area_r = $self->check_in_area(@area, @p);
-            if ($self->check_in_area(@p, @area) || $self->check_in_area(@area, @p)) {
+            if ($self->check_in_area(@p, @area)) {
                 push @results, $_;
             }
         }
@@ -585,18 +583,17 @@ sub check_in_area {
         $x2_min, $y2_min, $x2_max, $y2_max,
     ) = @_;
 
-    my $lhit = $self->between($x1_min, $x2_min, $x2_max);
-    my $rhit = $self->between($x1_max, $x2_min, $x2_max);
-    my $thit = $self->between($y1_min, $y2_min, $y2_max);
-    my $bhit = $self->between($y1_max, $y2_min, $y2_max);
-
-    return ( # collision
-        ($lhit && $thit) || ($rhit && $thit) || ($lhit && $bhit) || ($rhit && $bhit)
-    ) || ( # containment
-        ($lhit && $thit) && ($rhit && $thit) && ($lhit && $bhit) && ($rhit && $bhit)
+    my $result = !(
+           $x1_min > $x2_max
+        or $x1_max < $x2_min
+        or $y1_min > $y2_max
+        or $y1_max < $y2_min
     );
+
+    return $result;
 }
 
+#  SWL: not used anymore - remove?
 sub between {
     my $self  = shift;
     my $check = shift;
@@ -908,18 +905,12 @@ array consisting of the record number and the content length of the record.
 Retrieve an shp record for the specified index.  Returns a
 Geo::ShapeFile::Shape object.
 
-=item shapes_in_area($x_min,$y_min,$x_max,$y_max)
+=item shapes_in_area($x_min, $y_min, $x_max, $y_max)
 
-Returns an array of integers, consisting of the indices of the shapes that
-overlap with the area specified.  Currently this is a very oversimplified
-function that actually finds shapes that have any point that falls within
-the specified bounding box.  Currently it may miss some shapes that actually
-do overlap with the specified area, if there are two points outside the area
-that cause an edge to pass through the area, but neither of the end points
-of that edge actually fall within the area specified.  Patches to make this
-function more useful would be welcome.
+Returns an array of integers listing which shape IDs have
+bounding boxes that overlap with the area specified.
 
-=item check_in_area($x1_min,$y1_min,$x1_max,$y1_max,$x2_min,$x2_max,$y2_min,$y2_max)
+=item check_in_area($x1_min, $y1_min, $x1_max, $y1_max, $x2_min, $x2_max, $y2_min, $y2_max)
 
 Returns true if the two specified areas overlap.
 
@@ -939,7 +930,7 @@ Returns the name of the type associated with the given type id number.
 =item find_bounds(@shapes)
 
 Takes an array of Geo::ShapeFile::Shape objects, and returns a hash, with
-keys of x_min,y_min,x_max,y_max, with the values for each of those ranges.
+keys of x_min,y_min,x_max,y_max, with the values for each of those bounds.
 
 =item get_dbf_field_names()
 
@@ -955,9 +946,9 @@ Please send any bugs, suggestions, or feature requests to
 
 =head1 SEE ALSO
 
-L<Geo::ShapeFile::Shape>
-L<Geo::ShapeFile::Point>
-L<Geo::Shapefile::Writer>
+L<Geo::ShapeFile::Shape>, 
+L<Geo::ShapeFile::Point>, 
+L<Geo::Shapefile::Writer>, 
 L<Geo::GDAL>
 
 =head1 AUTHOR
@@ -969,9 +960,9 @@ Shawn Laffan, E<lt>shawnlaffan@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2013 by Jason Kohles
+Copyright 2002-2013 by Jason Kohles (versions up to and including 2.52)
 
-Copyright 2014 by Shawn Laffan
+Copyright 2014 by Shawn Laffan (versions 2.53 -)
 
 
 This library is free software; you can redistribute it and/or modify
