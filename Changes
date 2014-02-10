@@ -1,5 +1,25 @@
 Revision history for Geo::ShapeFile.
 
+2.53_001 2014-02-10
+    - Shawn Laffan
+    - Clear up several longstanding RT tickets:
+        - https://rt.cpan.org/Ticket/Display.html?id=46698
+          Clarify docs such that point objects are passed to has_point, not coordinates.
+        - https://rt.cpan.org/Ticket/Display.html?id=46068
+          Values returned from width and height were swapped.  Thanks to Le Goddard for reporting.
+        - https://rt.cpan.org/Ticket/Display.html?id=49054
+          $@ should have been @_ (thanks to rgsave@hotmail.com for reporting)
+        - https://rt.cpan.org/Ticket/Display.html?id=92790
+          DBF field names can now be accessed in file order.
+        - https://rt.cpan.org/Ticket/Display.html?id=63347
+          corners were incorrectly reported.  Thanks to Liam Gretton for reporting.
+    - Reorganise the test suite to use subtests, with tests in subs.  Add more tests. 
+    - General formatting and style changes to the code.
+    - Add List::Util as a dependency.
+    - Development is now on github, so update the metadata to reflect this.
+      https://github.com/shawnlaffan/Geo-ShapeFile
+
+
 2.52  2007-09-14
     - Jason Kohles
     - Fixed the overloading setup in Geo::ShapeFile::Point to keep it from
