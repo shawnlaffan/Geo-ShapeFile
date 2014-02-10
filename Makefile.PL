@@ -10,7 +10,7 @@ WriteMakefile(
         'List::Util' => 0,
     },
     BUILD_REQUIRES => {
-        rlib         => 0,
+        'rlib'       => 0,
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },

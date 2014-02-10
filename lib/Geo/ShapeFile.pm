@@ -8,7 +8,7 @@ use Geo::ShapeFile::Shape;
 use Config;
 use List::Util qw /min max/;
 
-our $VERSION = '2.53_003';
+our $VERSION = '2.54';
 
 my $is_little_endian = unpack 'b', (pack 'S', 1 );
 
