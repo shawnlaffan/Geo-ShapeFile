@@ -6,6 +6,8 @@ xt/mem_leak_tests
 
 Makefile.old
 MANIFEST.bak
-Makefile
+Makefile$
 MYMETA.yml
 MYMETA.json
+
+.+\.html

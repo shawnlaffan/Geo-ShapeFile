@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Math::Trig;
 use Carp;
-our $VERSION = '2.53_001';
+our $VERSION = '2.53_002';
 
 use overload
     '==' => 'eq',

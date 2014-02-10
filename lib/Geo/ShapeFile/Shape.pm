@@ -6,7 +6,7 @@ use Geo::ShapeFile;
 use Geo::ShapeFile::Point;
 
 use parent qw /Geo::ShapeFile/;
-our $VERSION = '2.53_001';
+our $VERSION = '2.53_002';
 
 my $is_little_endian = unpack 'b', (pack 'S', 1 );
 
