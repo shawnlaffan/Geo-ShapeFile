@@ -18,6 +18,7 @@ note "Testing Geo::ShapeFile version $Geo::ShapeFile::VERSION\n";
 
 use Geo::ShapeFile::TestHelpers;
 
+test_shapes_in_area();
 #test_end_point_slope();
 test_shapepoint();
 test_files();
@@ -245,3 +246,46 @@ sub test_empty_dbf {
     my $records = $obj->records;
     is ($records, 0, 'empty dbf file has zero records');
 }
+
+
+sub test_shapes_in_area {
+    my $shp = Geo::ShapeFile->new ("$dir/test_shapes_in_area");
+    
+    my @shapes_in_area = $shp->shapes_in_area (1, 1, 11, 11);
+
+    is_deeply (
+        \@shapes_in_area,
+        [1],
+        'Shape is in area'
+    );
+
+    @shapes_in_area = $shp->shapes_in_area (11, 11, 12, 12);
+
+    is_deeply (
+        \@shapes_in_area,
+        [],
+        'Shape is not in area'
+    );
+
+    #  Now check with a larger region
+    #  This should get all features
+    my @bounds = (-104, 17, -96, 22);
+    $shp = Geo::ShapeFile->new("$dir/lakes");
+    @shapes_in_area = $shp->shapes_in_area (@bounds);
+    is_deeply (
+        \@shapes_in_area,
+        [1, 2, 3],
+        'All lake shapes in bounds',
+    );
+    
+    #  just the western two features
+    @bounds = (-104, 17, -100, 22);
+    @shapes_in_area = $shp->shapes_in_area (@bounds);
+    is_deeply (
+        \@shapes_in_area,
+        [1, 2],
+        'Western two lake shapes in bounds',
+    );
+
+}
+

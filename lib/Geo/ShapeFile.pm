@@ -540,7 +540,7 @@ sub shapes_in_area {
     my @results = ();
     SHAPE:
     for (1 .. $self->shapes) {
-        my($offset,$content_length) = $self->get_shx_record($_);
+        my($offset, $content_length) = $self->get_shx_record($_);
         my $type = unpack 'V', $self->get_bytes('shp',$offset * 2 + 8, 4);
 
         next SHAPE if $self->type($type) eq 'Null';
@@ -564,6 +564,8 @@ sub shapes_in_area {
                     ? (unpack 'd4', $bytes )
                     : (reverse unpack 'd4', scalar reverse $bytes )
             );
+            #my $in_area_n = $self->check_in_area(@p, @area);
+            #my $in_area_r = $self->check_in_area(@area, @p);
             if ($self->check_in_area(@p, @area) || $self->check_in_area(@area, @p)) {
                 push @results, $_;
             }
@@ -599,9 +601,12 @@ sub between {
     my $self  = shift;
     my $check = shift;
 
-    unless ($_[0] < $_[1]) { @_ = reverse @_; }
+    #  ensure min then max
+    if ($_[0] > $_[1]) {
+        @_ = reverse @_;
+    }
 
-    return $check >= $_[0] and $check <= $_[1];
+    return ($check >= $_[0]) && ($check <= $_[1]);
 }
 
 sub bounds {
