@@ -1,5 +1,10 @@
 Revision history for Geo::ShapeFile.
 
+2.55 2014-02-12
+    - Shawn Laffan
+    - Geo::ShapeFile::get_part now returns an array ref in scalar context.
+    - Add parent to the list of dependencies in the makefile. 
+
 2.54 2014-02-11
     - Shawn Laffan
     - Fix https://rt.cpan.org/Ticket/Display.html?id=89563
