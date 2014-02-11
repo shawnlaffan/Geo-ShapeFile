@@ -308,7 +308,7 @@ sub extract_count_ints {
 
     my $template = ($end =~ /^l/i) ? 'V' :'N';
 
-    my $tmp = substr $self->{shp_data}, 0, ($count*4) ,'';
+    my $tmp = substr $self->{shp_data}, 0, ($count * 4), '';
     my @tmp = unpack $template . $count, $tmp;
     #my @tmp = unpack($template."[$count]",$tmp);
 
@@ -436,7 +436,7 @@ sub extract_z_data {
 sub extract_m_data {
     my $self = shift;
 
-    $self->extract_doubles ('shp_m_min','shp_m_max');
+    $self->extract_doubles ('shp_m_min', 'shp_m_max');
     $self->extract_count_doubles($self->{shp_num_points}, 'shp_m_data');
     my @mdata = @{delete $self->{shp_m_data}};
     for (0 .. $#mdata) {
@@ -447,9 +447,9 @@ sub extract_m_data {
 sub extract_parts_and_points {
     my $self = shift;
 
-    $self->extract_ints('little','shp_num_parts','shp_num_points');
-    $self->extract_count_ints($self->{shp_num_parts},'little','shp_parts');
-    $self->extract_points($self->{shp_num_points},'shp_points');
+    $self->extract_ints('little', 'shp_num_parts', 'shp_num_points');
+    $self->extract_count_ints($self->{shp_num_parts}, 'little', 'shp_parts');
+    $self->extract_points($self->{shp_num_points}, 'shp_points');
 }
 
 
@@ -592,7 +592,7 @@ sub dump {
 
     #$self->points();
     #$self->get_part();
-    #$self->x_min,x_max,y_min,y_max,z_min,z_max,m_min,m_max
+    #$self->x_min, x_max, y_min, y_max, z_min, z_max, m_min, m_max
 
     $return .= sprintf
         "Shape Type: %s (id: %d)  Parts: %d   Points: %d\n",

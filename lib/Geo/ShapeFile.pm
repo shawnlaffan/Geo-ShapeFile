@@ -260,7 +260,7 @@ sub generate_dbf_header {
 #        croak "dbf: file wrong size (should be $ls, but found $li)";
 #    }
 #
-#    my $header = $self->get_bytes('dbf',32,$self->{dbf_header_length}-32);
+#    my $header = $self->get_bytes('dbf',32, $self->{dbf_header_length}-32);
 #    my $count = 0;
 #    $self->{dbf_header_info} = [];
 #
@@ -277,7 +277,7 @@ sub generate_dbf_header {
 #            $tmp{type},
 #            $tmp{size},
 #            $tmp{decimals}
-#        ) = unpack("Z11 Z x4 C2",$tmp);
+#        ) = unpack("Z11 Z x4 C2", $tmp);
 #
 #        $self->{dbf_field_info}->[$count] = {%tmp};
 #        
@@ -301,7 +301,7 @@ sub generate_dbf_header {
 #
 #    my @field_names = ();
 #    foreach(@{$self->{dbf_field_info}}) {
-#        push(@field_names,$_->{name});
+#        push(@field_names, $_->{name});
 #    }
 #    $self->{dbf_field_names} = [@field_names];
 #
@@ -524,22 +524,22 @@ sub get_shp_record_header {
 
     my($offset) = $self->get_shx_record($entry);
 
-    my $record = $self->get_bytes('shp',$offset*2,8);
+    my $record = $self->get_bytes('shp', $offset * 2, 8);
     my ($number, $content_length) = unpack 'N N', $record;
 
-    return ($number,$content_length);
+    return ($number, $content_length);
 }
 
 # TODO - cache this
 sub shapes_in_area {
     my $self = shift;
-    my @area = @_; # x_min,y_min,x_max,y_max,
+    my @area = @_; # x_min, y_min, x_max, y_max,
 
     my @results = ();
     SHAPE:
     for (1 .. $self->shapes) {
         my($offset, $content_length) = $self->get_shx_record($_);
-        my $type = unpack 'V', $self->get_bytes('shp',$offset * 2 + 8, 4);
+        my $type = unpack 'V', $self->get_bytes('shp', $offset * 2 + 8, 4);
 
         next SHAPE if $self->type($type) eq 'Null';
 
@@ -551,12 +551,12 @@ sub shapes_in_area {
                     : (reverse unpack 'dd', scalar reverse $bytes)
             );
             my $pt = Geo::ShapeFile::Point->new(X => $x, Y => $y);
-            if($self->area_contains_point($pt,@area)) {
+            if($self->area_contains_point($pt, @area)) {
                 push @results, $_;
             }
         }
         elsif ($self->type($type) =~ /^(PolyLine|Polygon|MultiPoint|MultiPatch)/) {
-            my $bytes = $self->get_bytes('shp',($offset*2)+12,32);
+            my $bytes = $self->get_bytes('shp', ($offset * 2) + 12, 32);
             my @p = (
                 $is_little_endian
                     ? (unpack 'd4', $bytes )
@@ -842,7 +842,7 @@ in the shp file.  The corners are listed clockwise starting with the upper
 left.
 (upper_left_corner, upper_right_corner, lower_right_corner, lower_left_corner)
 
-=item area_contains_point($point,$x_min,$y_min,$x_max,$y_max)
+=item area_contains_point($point, $x_min, $y_min, $x_max, $y_max)
 
 Utility function that returns true if the Geo::ShapeFile::Point object in
 point falls within the bounds of the rectangle defined by the area
@@ -928,7 +928,7 @@ Returns the name of the type associated with the given type id number.
 =item find_bounds(@shapes)
 
 Takes an array of Geo::ShapeFile::Shape objects, and returns a hash, with
-keys of x_min,y_min,x_max,y_max, with the values for each of those bounds.
+keys of x_min, y_min, x_max, y_max, with the values for each of those bounds.
 
 =item get_dbf_field_names()
 

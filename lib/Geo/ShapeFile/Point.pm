@@ -46,10 +46,10 @@ sub var {
 }
 
 #  these could be factory generated
-sub X { shift()->var('X',@_); }
-sub Y { shift()->var('Y',@_); }
-sub Z { shift()->var('Z',@_); }
-sub M { shift()->var('M',@_); }
+sub X { shift()->var('X', @_); }
+sub Y { shift()->var('Y', @_); }
+sub Z { shift()->var('Z', @_); }
+sub M { shift()->var('M', @_); }
 
 sub x_min { shift()->var('X'); }
 sub x_max { shift()->var('X'); }
@@ -96,7 +96,7 @@ sub stringify {
 }
 
 sub distance_from {
-    my ($p1,$p2) = @_;
+    my ($p1, $p2) = @_;
 
     my $dp = $p2->subtract($p1);
     return sqrt ( ($dp->X ** 2) + ($dp->Y **2) );
@@ -152,7 +152,7 @@ sub mathemagic {
 
     do {
         no strict 'refs';
-        return $function->($l,$r);
+        return $function->($l, $r);
     }
 }
 
