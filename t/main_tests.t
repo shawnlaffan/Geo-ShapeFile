@@ -281,6 +281,13 @@ sub test_shapes_in_area {
         'Shape is in area'
     );
 
+    @shapes_in_area = $shp->shapes_in_area (1, 1, 11, 9);
+    is_deeply (
+        [1],
+        \@shapes_in_area,
+        'Shape is in area'
+    );
+
     @shapes_in_area = $shp->shapes_in_area (11, 11, 12, 12);
     is_deeply (
         [],

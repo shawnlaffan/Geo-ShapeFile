@@ -409,7 +409,7 @@ sub get_part {
         $end = $#points;
     }
 
-    return @points[$beg .. $end];
+    return wantarray ? @points[$beg .. $end] : [@points[$beg .. $end]];
 }
 
 sub shape_type {
