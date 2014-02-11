@@ -78,17 +78,15 @@ sub caching {
 }
 
 sub cache {
-    my $self = shift;
-    my $type = shift;
-    my $obj  = shift;
+    my ($self, $type, $obj, $cache) = @_;
 
     return $self->{_change_cache}->{$type}->{$obj}
       if $self->{_change_cache}->{$type} && $self->{_change_cache}->{$type}->{$obj};
 
     return if !$self->caching($type);
 
-    if (@_) {
-        $self->{_object_cache}->{$type}->{$obj} = shift;
+    if ($cache) {
+        $self->{_object_cache}->{$type}->{$obj} = $cache;
     }
     return $self->{_object_cache}->{$type}->{$obj};
 }
@@ -514,7 +512,7 @@ sub get_shx_record {
     if (!$shx) {
         my $record = $self->get_bytes('shx', (($entry - 1) * 8) + 100, 8);
         $shx = [unpack 'N N', $record];
-        $self->cache('shx', $entry,$shx);
+        $self->cache('shx', $entry, $shx);
     }
 
     return @{$shx};
@@ -632,9 +630,9 @@ sub get_shp_record {
     my $self  = shift;
     my $entry = shift;
 
-    my $shape = $self->cache('shp',$entry);
+    my $shape = $self->cache('shp', $entry);
     if (!$shape) {
-        my($offset,$content_length) = $self->get_shx_record($entry);
+        my($offset, $content_length) = $self->get_shx_record($entry);
 
         my $record = $self->get_bytes('shp', $offset * 2, $content_length * 2 + 8);
 
