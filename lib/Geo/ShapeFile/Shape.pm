@@ -104,7 +104,7 @@ sub calculate_bounds {
     my $self = shift;
 
     my %bounds = $self->find_bounds($self->points);
-    foreach(keys %bounds) {
+    foreach (keys %bounds) {
         $self->{'shp_' . $_} = $bounds{$_};
     }
     return %bounds;
@@ -400,16 +400,17 @@ sub get_part {
 
     $index -= 1; # shift to a 0 index
 
-    my @parts  = $self->parts;
-    my @points = $self->points;
-    my $beg    = $parts[$index]   || 0;
-    my $end    = $parts[$index+1] || 0;  #  if we use 5.010 then we can use the // operator here
+    #  $parts is an array of starting indexes in the $points array
+    my $parts  = $self->parts;
+    my $points = $self->points;
+    my $beg    = $parts->[$index]   || 0;
+    my $end    = $parts->[$index+1] || 0;  #  if we use 5.010 then we can use the // operator here
     $end -= 1;
     if ($end < 0) {
-        $end = $#points;
+        $end = $#$points;
     }
 
-    return wantarray ? @points[$beg .. $end] : [@points[$beg .. $end]];
+    return wantarray ? @$points[$beg .. $end] : [@$points[$beg .. $end]];
 }
 
 sub shape_type {
@@ -484,14 +485,14 @@ sub contains_point {
     my $a = 0;
     my ( $x0, $y0 ) = ( $point->X, $point->Y );
 
-    for ( 1 .. $self->num_parts ) {
+    foreach my $part_num ( 1 .. $self->num_parts ) {
         my ( $x1, $y1 );
-        for my $p2 ( $self->get_part( $_ ) ) {
+        foreach my $p2 ( $self->get_part( $part_num ) ) {
             my $x2 = $p2->X - $x0;
             my $y2 = $p2->Y - $y0;
 
-            if ( defined( $y1 ) && ( ( $y2 >= 0 ) != ( $y1 >= 0 ) ) ) {
-                my $isl = $x1*$y2 - $y1*$x2;
+            if ((defined $y1) && (($y2 >= 0) != ($y1 >= 0))) {
+                my $isl = $x1 * $y2 - $y1 * $x2;
                 if ( $y2 > $y1 ) {
                     --$a if $isl > 0;
                 }
@@ -502,6 +503,7 @@ sub contains_point {
             ( $x1, $y1 ) = ( $x2, $y2 );
         }
     }
+
     return $a;
 }
 

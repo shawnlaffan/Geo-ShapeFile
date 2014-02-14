@@ -368,3 +368,41 @@ sub test_corners {
     cmp_ok ($lr->Y, '<', $ur->Y, 'corners: lr is below ur');
 
 }
+
+sub test_points_in_polygon {
+    #  need a shape with holes in it, but states is a multipart poly
+    my $shp = Geo::ShapeFile->new ("$dir/states");
+
+    my @in_coords = (
+        [-112.386, 28.950],
+        [-112.341, 29.159],
+        [-112.036, 29.718],
+        [-110.186, 30.486],
+        [-114.845, 32.380],
+    );
+    my @out_coords = (
+        [-111.286, 27.395],
+        [-113.843, 30.140],
+        [-111.015, 31.767],
+        [-112.594, 34.300],
+        [-106.772, 28.420],
+        [-114.397, 24.802],
+    );
+    
+    #  shape 23 is sonora
+    my $test_poly = $shp->get_shp_record(23);
+
+    foreach my $coord (@in_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok ($result, "$point is in polygon 1");
+    }
+
+    foreach my $coord (@out_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok (!$result, "$point is not in polygon 1");
+    }
+    
+
+}
