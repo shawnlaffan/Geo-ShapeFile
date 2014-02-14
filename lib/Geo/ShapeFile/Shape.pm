@@ -486,12 +486,17 @@ sub contains_point {
     my ( $x0, $y0 ) = ( $point->X, $point->Y );
 
     foreach my $part_num ( 1 .. $self->num_parts ) {
-        my ( $x1, $y1 );
-        foreach my $p2 ( $self->get_part( $part_num ) ) {
+        my $points = $self->get_part( $part_num );
+
+        my $p_start = shift @$points;  #  $points is a copy, so no harm in shifting
+        my $x1 = $p_start->X - $x0;
+        my $y1 = $p_start->Y - $y0;
+
+        foreach my $p2 ( @$points ) {
             my $x2 = $p2->X - $x0;
             my $y2 = $p2->Y - $y0;
 
-            if ((defined $y1) && (($y2 >= 0) != ($y1 >= 0))) {
+            if (($y2 >= 0) != ($y1 >= 0)) {
                 my $isl = $x1 * $y2 - $y1 * $x2;
                 if ( $y2 > $y1 ) {
                     --$a if $isl > 0;
