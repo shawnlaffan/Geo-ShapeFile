@@ -449,6 +449,8 @@ sub test_points_in_polygon {
         ok (!$result, "$point is not in $filename polygon 83");
     }
     
+    my $ix = $test_poly->build_spatial_index;
+    
     return;
 }
 

@@ -4,8 +4,11 @@ use warnings;
 use Carp;
 use Geo::ShapeFile;
 use Geo::ShapeFile::Point;
+use Tree::R;
+use List::Util qw /min max/;
 
 use parent qw /Geo::ShapeFile/;
+
 our $VERSION = '2.55_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
@@ -524,16 +527,99 @@ sub contains_point {
     return $a;
 }
 
+
+#  add the polygon's segments to a spatial index
+#  where the index boxes are as wide as the shape
+#  todo: Make the width that of the part.
+sub build_spatial_index {
+    my $self = shift;
+    my $n    = shift;  #  number of boxes
+
+    my $sp_index = Tree::R->new;
+
+    my @parts = $self->parts;
+
+    my ($x_min, $x_max);
+    if (scalar @parts == 1) {
+        $x_min = $self->x_min;
+        $x_max = $self->x_max;
+    }
+
+
+    foreach my $part (@parts) {
+        #  need to calculate the bounds for each part if more than one
+        if (!defined $x_min) {
+            my %bounds = $self->_get_part_bounds ($part);
+            $x_min = $bounds{x_min};
+            $x_max = $bounds{x_max};
+        }
+
+        my $segments = $self->get_segments ($part);
+
+        foreach my $segment (@$segments) {
+            my $y0 = $segment->[0]->get_y;
+            my $y1 = $segment->[1]->get_y;
+
+            #  reverse them if needed
+            if ($y1 < $y0) {
+                ($y0, $y1) = ($y1, $y0);
+            }
+
+            my @bbox = ($x_min, $y0, $x_max, $y1);
+            $sp_index->insert($segment, @bbox);
+        }
+
+        #  clear the bounds
+        ($x_min, $x_max) = (undef, undef);
+    }
+
+    $self->{spatial_index} = $sp_index;
+
+    return $sp_index;
+}
+
+sub _get_part_bounds {
+    my $self = shift;
+    my $part = shift;
+
+    my $points = $self->get_part($part);
+
+    my $pt1 = shift @$points;
+    my ($x_min, $y_min) = ($pt1->get_x, $pt1->get_y);
+    my ($x_max, $y_max) = ($x_min, $y_min);
+
+    foreach my $pt (@$points) {
+        my $x = $pt->get_x;
+        my $y = $pt->get_y;
+
+        $x_min = min ($x_min, $x);
+        $y_min = min ($y_min, $y);
+        $x_max = max ($x_max, $x);
+        $y_max = max ($y_max, $y);
+    }
+
+    my %bounds = (
+        x_min => $x_min,
+        x_max => $x_max,
+        y_min => $y_min,
+        y_max => $y_max,
+    );
+
+    return wantarray ? %bounds : \%bounds;
+}
+
 sub get_segments {
     my $self = shift;
     my $part = shift;
 
-    my @points = $self->get_part($part);
-    my @segments = ();
-    for (0 .. $#points-1) {
-        push @segments, [$points[$_], $points[$_+1]];
+    my $points = $self->get_part($part);
+
+    my @segments;
+    foreach my $i (0 .. $#$points - 1) {
+        push @segments, [$points->[$i], $points->[$i+1]];
     }
-    return @segments;
+
+    return wantarray ? @segments : \@segments;
 }
 
 sub vertex_centroid {
