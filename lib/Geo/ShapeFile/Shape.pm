@@ -470,8 +470,8 @@ sub has_point {
 
     return 0 if !$self->bounds_contains_point($point);
 
-    foreach ($self->points) {
-        return 1 if $_ == $point;
+    foreach my $check_pt ($self->points) {
+        return 1 if $check_pt == $point;
     }
 
     return 0;
@@ -483,26 +483,38 @@ sub contains_point {
     return 0 if !$self->bounds_contains_point( $point );
 
     my $a = 0;
-    my ( $x0, $y0 ) = ( $point->X, $point->Y );
+    my ( $x0, $y0 ) = ( $point->get_x, $point->get_y );
 
-    foreach my $part_num ( 1 .. $self->num_parts ) {
+    #  one day we will track the bounds of the parts
+    #  so we can more easily skip parts of multipart polygons
+    my $num_parts = $self->num_parts;
+
+    #  $x1, $x2, $y1 and $y2 are offsets from the point we are checking
+    foreach my $part_num (1 .. $num_parts) {
         my $points = $self->get_part( $part_num );
 
         my $p_start = shift @$points;  #  $points is a copy, so no harm in shifting
-        my $x1 = $p_start->X - $x0;
-        my $y1 = $p_start->Y - $y0;
+        my $x1 = $p_start->get_x - $x0;
+        my $y1 = $p_start->get_y - $y0;
 
         foreach my $p2 ( @$points ) {
-            my $x2 = $p2->X - $x0;
-            my $y2 = $p2->Y - $y0;
+            my $x2 = $p2->get_x - $x0;
+            my $y2 = $p2->get_y - $y0;
 
+            #  SWL:  I think this is only checking sidedness when it can change.
+            #  If we can only be the same side (left or right) as the previous vertex
+            #  then there is no need to check more closely.
             if (($y2 >= 0) != ($y1 >= 0)) {
                 my $isl = $x1 * $y2 - $y1 * $x2;
                 if ( $y2 > $y1 ) {
-                    --$a if $isl > 0;
+                    if ($isl > 0) {
+                        $a--;
+                    }
                 }
                 else {
-                    ++$a if $isl < 0;
+                    if ($isl < 0) {
+                        $a++;
+                    }
                 }
             }
             ( $x1, $y1 ) = ( $x2, $y2 );

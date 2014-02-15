@@ -35,7 +35,7 @@ sub new {
 
 sub var {
     my $self = shift;
-    my $var = shift;
+    my $var  = shift;
 
     if(@_) {
         return $self->{$var} = shift;
@@ -59,6 +59,12 @@ sub z_min { shift()->var('Z'); }
 sub z_max { shift()->var('Z'); }
 sub m_min { shift()->var('M'); }
 sub m_max { shift()->var('M'); }
+
+sub get_x { return shift()->{X} }
+sub get_y { return shift()->{Y} }
+sub get_z { return shift()->{Z} }
+sub get_m { return shift()->{M} }
+
 
 sub import {
     my $self = shift;
