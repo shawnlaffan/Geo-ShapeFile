@@ -1,8 +1,8 @@
-Geo/ShapeFile version 2.53
+Geo/ShapeFile version 2.54
 ==========================
 
 Geo::ShapeFile is a perl library for reading ESRI shape files (such as
-those produced by the ESRI Arc/Info application.
+those produced by the ESRI ArcGIS application).
 
 INSTALLATION
 
@@ -13,19 +13,11 @@ To install this module type the following:
    make test
    make install
 
-DEPENDENCIES
-
-This module requires these other modules and libraries:
-
-  Carp
-  IO::File
-  Math::Trig
-  Test::More (if you want to run the tests)
 
 REPORTING BUGS
 
-Please report any bugs or problems by sending email to:
-geo-shapefile-bugs@jasonkohles.com
+Please report any bugs or problems to:
+https://github.com/shawnlaffan/Geo-ShapeFile/issues
 
 EXAMPLES
 
