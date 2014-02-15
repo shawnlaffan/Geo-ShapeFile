@@ -993,7 +993,7 @@ Builds a spatial index (a L<Tree::R> object) and returns it.  This will be used 
 many of the routines, but you can use it directly if useful.
 
 =item get_spatial_index()
-Returns the spatial index object, or undef if one has not been built.
+Returns the spatial index object, or C<undef> if one has not been built.
 
 =back
 

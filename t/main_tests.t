@@ -377,8 +377,12 @@ sub test_corners {
 }
 
 sub test_points_in_polygon {
-    #  need a shape with holes in it, but states is a multipart poly (poly.shp does the job - need to add tests)
-    my $shp = Geo::ShapeFile->new ("$dir/states");
+    my $shp;
+    my $filename;
+
+    #  multipart poly
+    $filename = 'states.shp';
+    $shp = Geo::ShapeFile->new ("$dir/$filename");
 
     my @in_coords = (
         [-112.386, 28.950],
@@ -402,15 +406,49 @@ sub test_points_in_polygon {
     foreach my $coord (@in_coords) {
         my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
         my $result = $test_poly->contains_point ($point);
-        ok ($result, "$point is in polygon 1");
+        ok ($result, "$point is in $filename polygon 23");
     }
 
     foreach my $coord (@out_coords) {
         my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
         my $result = $test_poly->contains_point ($point);
-        ok (!$result, "$point is not in polygon 1");
+        ok (!$result, "$point is not in $filename polygon 23");
     }
 
+    #  now try with a shapefile with holes in the polys
+    $filename = 'polygon.shp';
+    $shp = Geo::ShapeFile->new ("$dir/$filename");
+    #  shape 83 has holes
+    $test_poly = $shp->get_shp_record(83);
+    
+    @in_coords = (
+        [477418, 4762016],
+        [476644, 4761530],
+        [477488, 4760789],
+        [477716, 4760055],
+    );
+    @out_coords = (
+        [477521, 4760247],  # hole
+        [477414, 4761150],  # hole
+        [477388, 4761419],  # hole
+        [477996, 4761648],  # hole
+        [476810, 4761766],  # outside but in bounds
+        [478214, 4760627],  # outside but in bounds
+        [477499, 4762436],  # outside bounds
+    );
+    
+    foreach my $coord (@in_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok ($result, "$point is in $filename polygon 83");
+    }
+
+    foreach my $coord (@out_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok (!$result, "$point is not in $filename polygon 83");
+    }
+    
     return;
 }
 
