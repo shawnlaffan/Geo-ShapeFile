@@ -572,8 +572,8 @@ sub shapes_in_area {
 
     my @results = ();
     SHAPE:
-    for (1 .. $self->shapes) {
-        my($offset, $content_length) = $self->get_shx_record($_);
+    foreach my $shp_id (1 .. $self->shapes) {
+        my($offset, $content_length) = $self->get_shx_record($shp_id);
         my $type = unpack 'V', $self->get_bytes('shp', $offset * 2 + 8, 4);
 
         next SHAPE if $self->type($type) eq 'Null';
@@ -587,7 +587,7 @@ sub shapes_in_area {
             );
             my $pt = Geo::ShapeFile::Point->new(X => $x, Y => $y);
             if($self->area_contains_point($pt, @area)) {
-                push @results, $_;
+                push @results, $shp_id;
             }
         }
         elsif ($self->type($type) =~ /^(PolyLine|Polygon|MultiPoint|MultiPatch)/) {
@@ -598,7 +598,7 @@ sub shapes_in_area {
                     : (reverse unpack 'd4', scalar reverse $bytes )
             );
             if ($self->check_in_area(@p, @area)) {
-                push @results, $_;
+                push @results, $shp_id;
             }
         }
         else {
