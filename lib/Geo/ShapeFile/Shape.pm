@@ -618,6 +618,8 @@ sub build_spatial_index {
     my $self = shift;
     my $n    = shift || 10;
 
+    $n = int $n;
+
     croak 'Cannot build spatial index with negative number of boxes'
       if $n <= 0;
 
@@ -959,15 +961,34 @@ shape.  See the L<Geo::ShapeFile::Point> documentation for a note about how
 to exclude Z and/or M data from being considered when matching points.
 
 =item contains_point($point);
+=item contains_point($point, $use_index);
 
 Returns true if the specified point falls in the interior of this shape
 and false if the point is outside the shape.  Return value is unspecified
 if the point is one of the vertices or lies on some segment of the
 bounding polygon.
 
-Note that the return value is actually a winding-number computed ignoring
-Z and M fields and so will be negative if the point is contained within a
-shape winding the wrong way.
+Passing $use_index uses a spatial index if defined (building it if needed).
+See L<build_spatial_index> for more details. 
+This will be the default behaviour in a future release.
+
+Note that the algorithm uses a sidedness algorithm ignoring
+Z and M fields and so will likely not work if the point is contained within a
+shape winding the wrong way.  Polygon shapes should be anticlockwise for outer boundaries,
+and clockwise for inner void polygons.
+
+=item build_spatial_index ($index_res)
+Builds a spatial index for use in contains_point().
+$index_res is a positive integer which sets the nnumber of along the y-axis.
+A value of 0 lets the system determine the number.
+
+=item get_spatial_index()
+Gets the spatial index.  This is a hash indexed by part number.
+Returns a hash reference in scalar context.
+
+=item bounds
+Returns the object's bounds as an array (x_min, y_min, x_max, y_max).
+Returns an array ref in scalar context.
 
 =item get_segments($part)
 
