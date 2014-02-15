@@ -473,6 +473,19 @@ sub z_max { shift()->{shp_z_max}; }
 sub m_min { shift()->{shp_m_min}; }
 sub m_max { shift()->{shp_m_max}; }
 
+sub bounds {
+    my $self = shift;
+
+    my @results = (
+        $self->x_min,
+        $self->y_min,
+        $self->x_max,
+        $self->y_max,
+    );
+
+    return wantarray ? @results : \@results;
+}
+
 sub has_point {
     my $self  = shift;
     my $point = shift;
@@ -548,16 +561,15 @@ sub _contains_point_use_index {
     my $num_parts = scalar @parts;
 
     #  $x1, $x2, $y1 and $y2 are offsets from the point we are checking
-  PART_ID:
+  PART:
     foreach my $part_index (1 .. $num_parts) {
-        #my $part_id = $parts[$part_index];
         my $sp_index = $sp_index_hash->{$part_index};
 
         my @results;
         $sp_index->query_point($x0, $y0, \@results);
 
         #  skip if not in this part's bounding box
-        next PART_ID if !scalar @results;
+        next PART if !scalar @results;
 
         # segments spanning the index's bounding box
         for my $segment (@results) {
@@ -613,21 +625,30 @@ sub build_spatial_index {
 
     my @parts = $self->parts;
 
+    my ($x_min, $x_max, $y_min, $y_max);
+
     my $part_id = 0;
     foreach my $part (@parts) {
         my $sp_index = Tree::R->new;
         $part_id ++;  #  parts are indexed base 1
 
-        my %bounds = $self->_get_part_bounds ($part_id);
+        my $segments = $self->get_segments ($part_id);
 
-        my ($x_min, $x_max, $y_min, $y_max) = @bounds{qw /x_min x_max y_min y_max/};
+        if (@parts > 1) {
+            my %bounds = $self->_get_part_bounds ($part_id);
+            ($x_min, $x_max, $y_min, $y_max) = @bounds{qw /x_min x_max y_min y_max/};
+        }
+        else {
+            ($x_min, $x_max, $y_min, $y_max) = $self->bounds;  #  faster than searching all points
+        }
         my $y_range = $y_max - $y_min;
         my $y_tol   = $y_range / 10000;
         $y_range   += 2 * $y_tol;
         $y_min     -= $y_tol;  #  make sure everything is inside the boxes - no edge sitters
         $y_max     += $y_tol;
 
-        my $box_ht  = $y_range / $n;
+        #  need a better way of optimising $n
+        my $box_ht  = scalar @$segments < 20 ? $y_range : $y_range / $n;
 
         my @box_y_vals;
         my $y = $y_min;
@@ -635,15 +656,6 @@ sub build_spatial_index {
             push @box_y_vals, [$y, $y + $box_ht];
             $y += $box_ht;
         }
-
-        #  need to calculate the bounds for each part if more than one
-        if (!defined $x_min) {
-            my %bounds = $self->_get_part_bounds ($part);
-            $x_min = $bounds{x_min};
-            $x_max = $bounds{x_max};
-        }
-
-        my $segments = $self->get_segments ($part_id);
 
         foreach my $segment (@$segments) {
             my $y0 = $segment->[0]->get_y;
@@ -667,8 +679,9 @@ sub build_spatial_index {
                     next BOX;             #  or try the next one
                 }
 
-                #  more tweaking would involve getting the
-                #  min and max X across the segments to define each box
+                #  More tweaking would involve getting the
+                #  min and max X across the segments to define each box.
+                #  That would increase the out of bounds results.  
                 my @bbox = ($x_min, $y_min, $x_max, $y_max);
                 $sp_index->insert($segment, @bbox);
                 $in_box++;
@@ -683,9 +696,6 @@ sub build_spatial_index {
         #use List::MoreUtils qw /uniq/;
         #my @uniq = uniq @results;
         #print scalar @results . ' ' . (scalar @$segments) . ' ' . scalar @uniq . "\n";
-
-        #  clear the bounds
-        ($x_min, $x_max) = (undef, undef);
 
         $sp_indexes{$part_id} = $sp_index;
     }

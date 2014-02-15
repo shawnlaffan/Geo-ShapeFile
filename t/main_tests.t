@@ -413,6 +413,21 @@ sub test_points_in_polygon {
         ok (!$result, "$point is not in $filename polygon 23");
     }
 
+    #  use the spatial index
+    $test_poly->build_spatial_index;
+
+    foreach my $coord (@in_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point, 0);
+        ok ($result, "$point is in $filename polygon 23 (indexed)");
+    }
+
+    foreach my $coord (@out_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok (!$result, "$point is not in $filename polygon 23 (indexed)");
+    }
+
     #  now try with a shapefile with holes in the polys
     $filename = 'polygon.shp';
     $shp = Geo::ShapeFile->new ("$dir/$filename");
@@ -448,8 +463,8 @@ sub test_points_in_polygon {
     }
 
     #  Now with the spatial index.
-    ##  explicitly build it 
-    #my $ix = $test_poly->build_spatial_index;
+    $test_poly->build_spatial_index;
+
     foreach my $coord (@in_coords) {
         my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
         my $result = $test_poly->contains_point ($point, 0);
