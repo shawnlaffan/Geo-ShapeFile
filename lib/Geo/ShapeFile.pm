@@ -174,14 +174,14 @@ sub get_spatial_index {
 
 
 sub _read_shx_header {
-    shift()->read_shx_shp_header('shx', @_);
+    shift()->_read_shx_shp_header('shx', @_);
 }
 
 sub _read_shp_header {
-    shift()->read_shx_shp_header('shp', @_);
+    shift()->_read_shx_shp_header('shp', @_);
 }
 
-sub read_shx_shp_header {
+sub _read_shx_shp_header {
     my $self  = shift;
     my $which = shift;
     my $doubles;
@@ -361,7 +361,8 @@ sub get_dbf_record {
     return wantarray ? %{$dbf} : $dbf;
 }
 
-sub set_dbf_record {
+#  needed?  not called anywhere
+sub _set_dbf_record {
     my $self   = shift;
     my $entry  = shift;
     my %record = @_;
@@ -369,7 +370,7 @@ sub set_dbf_record {
     $self->{_change_cache}->{dbf}->{$entry} = {%record};
 }
 
-sub get_shp_shx_header_value {
+sub _get_shp_shx_header_value {
     my $self = shift;
     my $val  = shift;
 
@@ -381,14 +382,14 @@ sub get_shp_shx_header_value {
 }
 
 #  factory these
-sub x_min { shift()->get_shp_shx_header_value('x_min'); }
-sub x_max { shift()->get_shp_shx_header_value('x_max'); }
-sub y_min { shift()->get_shp_shx_header_value('y_min'); }
-sub y_max { shift()->get_shp_shx_header_value('y_max'); }
-sub z_min { shift()->get_shp_shx_header_value('z_min'); }
-sub z_max { shift()->get_shp_shx_header_value('z_max'); }
-sub m_min { shift()->get_shp_shx_header_value('m_min'); }
-sub m_max { shift()->get_shp_shx_header_value('m_max'); }
+sub x_min { shift()->_get_shp_shx_header_value('x_min'); }
+sub x_max { shift()->_get_shp_shx_header_value('x_max'); }
+sub y_min { shift()->_get_shp_shx_header_value('y_min'); }
+sub y_max { shift()->_get_shp_shx_header_value('y_max'); }
+sub z_min { shift()->_get_shp_shx_header_value('z_min'); }
+sub z_max { shift()->_get_shp_shx_header_value('z_max'); }
+sub m_min { shift()->_get_shp_shx_header_value('m_min'); }
+sub m_max { shift()->_get_shp_shx_header_value('m_max'); }
 
 sub upper_left_corner {
     my $self = shift;
@@ -468,7 +469,7 @@ sub bounds_contains_point {
 }
 
 sub file_version {
-    shift()->get_shp_shx_header_value('file_version');
+    shift()->_get_shp_shx_header_value('file_version');
 }
 
 sub shape_type {
@@ -477,7 +478,7 @@ sub shape_type {
     return $self->{_change_cache}->{shape_type}
       if defined $self->{_change_cache}->{shape_type};
 
-    return $self->get_shp_shx_header_value('shape_type');
+    return $self->_get_shp_shx_header_value('shape_type');
 }
 
 sub shapes {
@@ -682,18 +683,18 @@ sub get_shp_record {
 }
 
 sub shx_handle {
-    shift()->get_handle('shx');
+    shift()->_get_handle('shx');
 }
 
 sub shp_handle {
-    shift()->get_handle('shp');
+    shift()->_get_handle('shp');
 }
 
 sub dbf_handle {
-    shift()->get_handle('dbf');
+    shift()->_get_handle('dbf');
 }
 
-sub get_handle {
+sub _get_handle {
     my $self  = shift;
     my $which = shift;
 
