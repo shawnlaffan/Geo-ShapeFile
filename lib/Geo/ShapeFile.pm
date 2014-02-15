@@ -51,17 +51,17 @@ sub new {
     };
 
     if (-f $self->{filebase} . '.shx') {
-        $self->read_shx_header();
+        $self->_read_shx_header();
         $self->{has_shx} = 1;
     }
 
     if (-f $self->{filebase} . '.shp') {
-        $self->read_shp_header();
+        $self->_read_shp_header();
         $self->{has_shp} = 1;
     }
 
     if (-f $self->{filebase} . '.dbf') {
-        $self->read_dbf_header();
+        $self->_read_dbf_header();
         $self->{has_dbf} = 1;
     }
 
@@ -173,11 +173,11 @@ sub get_spatial_index {
 }
 
 
-sub read_shx_header {
+sub _read_shx_header {
     shift()->read_shx_shp_header('shx', @_);
 }
 
-sub read_shp_header {
+sub _read_shp_header {
     shift()->read_shx_shp_header('shp', @_);
 }
 
@@ -186,7 +186,7 @@ sub read_shx_shp_header {
     my $which = shift;
     my $doubles;
 
-    $self->{$which . '_header'} = $self->get_bytes($which, 0, 100);
+    $self->{$which . '_header'} = $self->_get_bytes($which, 0, 100);
     (
         $self->{$which . '_file_code'}, $self->{$which . '_file_length'},
         $self->{$which . '_version'},   $self->{$which . '_shape_type'}, $doubles
@@ -225,10 +225,10 @@ sub get_dbf_field_names {
     return wantarray ? @fld_names : \@fld_names;
 }
 
-sub read_dbf_header {
+sub _read_dbf_header {
     my $self = shift;
 
-    $self->{dbf_header} = $self->get_bytes('dbf', 0, 12);
+    $self->{dbf_header} = $self->_get_bytes('dbf', 0, 12);
     (
         $self->{dbf_version},
         $self->{dbf_updated_year},
@@ -249,13 +249,13 @@ sub read_dbf_header {
     # have a end-of-file marker in their dbf files, Aleksandar Jelenak
     # says the ESRI tools don't have a problem with this, so we shouldn't
     # either
-    my $last_byte = $self->get_bytes('dbf', $li-1, 1);
+    my $last_byte = $self->_get_bytes('dbf', $li-1, 1);
     $ls ++ if ord $last_byte == 0x1A;
 
     croak "dbf: file wrong size (should be $ls, but found $li)"
       if $ls != $li;
 
-    my $header = $self->get_bytes('dbf', 32, $self->{dbf_header_length} - 32);
+    my $header = $self->_get_bytes('dbf', 32, $self->{dbf_header_length} - 32);
     my $count = 0;
     $self->{dbf_header_info} = [];
 
@@ -305,10 +305,11 @@ sub read_dbf_header {
     return 1;
 }
 
-sub generate_dbf_header {
+#  needed now there is Geo::ShapeFile::Writer?
+sub _generate_dbf_header {
     my $self = shift;
 
-    #$self->{dbf_header} = $self->get_bytes('dbf',0,12);
+    #$self->{dbf_header} = $self->_get_bytes('dbf',0,12);
     (
         $self->{dbf_version},
         $self->{dbf_updated_year},
@@ -341,7 +342,7 @@ sub get_dbf_record {
     if (!$dbf) {
         $entry--; # make entry 0-indexed
 
-        my $record = $self->get_bytes(
+        my $record = $self->_get_bytes(
             'dbf',
             $self->{dbf_header_length}+($self->{dbf_record_length} * $entry),
             $self->{dbf_record_length}+1, # +1 for deleted flag
@@ -373,7 +374,7 @@ sub get_shp_shx_header_value {
     my $val  = shift;
 
     if (!($self->{'shx_' . $val} || $self->{'shp_' . $val})) {
-        $self->read_shx_header();
+        $self->_read_shx_header();
     }
 
     return $self->{'shx_' . $val} || $self->{'shp_' . $val} || undef;
@@ -486,7 +487,7 @@ sub shapes {
       if defined $self->{_change_cache}->{records};
 
     if (!$self->{shx_file_length}) {
-        $self->read_shx_header();
+        $self->_read_shx_header();
     }
 
     my $filelength = $self->{shx_file_length};
@@ -534,7 +535,7 @@ sub get_shx_record {
     my $shx = $self->cache('shx', $entry);
 
     if (!$shx) {
-        my $record = $self->get_bytes('shx', (($entry - 1) * 8) + 100, 8);
+        my $record = $self->_get_bytes('shx', (($entry - 1) * 8) + 100, 8);
         $shx = [unpack 'N N', $record];
         $self->cache('shx', $entry, $shx);
     }
@@ -548,7 +549,7 @@ sub get_shp_record_header {
 
     my($offset) = $self->get_shx_record($entry);
 
-    my $record = $self->get_bytes('shp', $offset * 2, 8);
+    my $record = $self->_get_bytes('shp', $offset * 2, 8);
     my ($number, $content_length) = unpack 'N N', $record;
 
     return ($number, $content_length);
@@ -574,12 +575,12 @@ sub shapes_in_area {
     SHAPE:
     foreach my $shp_id (1 .. $self->shapes) {
         my ($offset, $content_length) = $self->get_shx_record($shp_id);
-        my $type = unpack 'V', $self->get_bytes ('shp', $offset * 2 + 8, 4);
+        my $type = unpack 'V', $self->_get_bytes ('shp', $offset * 2 + 8, 4);
 
         next SHAPE if $self->type($type) eq 'Null';
 
         if ($self->type($type) =~ /^Point/) {
-            my $bytes = $self->get_bytes('shp', $offset * 2 + 12, 16);
+            my $bytes = $self->_get_bytes('shp', $offset * 2 + 12, 16);
             my ($x, $y) = (
                 $little_endian_sys
                     ? (unpack 'dd', $bytes )
@@ -591,7 +592,7 @@ sub shapes_in_area {
             }
         }
         elsif ($self->type($type) =~ /^(PolyLine|Polygon|MultiPoint|MultiPatch)/) {
-            my $bytes = $self->get_bytes('shp', ($offset * 2) + 12, 32);
+            my $bytes = $self->_get_bytes('shp', ($offset * 2) + 12, 32);
             my @p = (
                 $little_endian_sys
                     ? (unpack 'd4', $bytes )
@@ -670,7 +671,7 @@ sub get_shp_record {
     if (!$shape) {
         my($offset, $content_length) = $self->get_shx_record($entry);
 
-        my $record = $self->get_bytes('shp', $offset * 2, $content_length * 2 + 8);
+        my $record = $self->_get_bytes('shp', $offset * 2, $content_length * 2 + 8);
 
         $shape = Geo::ShapeFile::Shape->new();
         $shape->parse_shp($record);
@@ -709,7 +710,7 @@ sub get_handle {
     return $self->{$han};
 }
 
-sub get_bytes {
+sub _get_bytes {
     my $self   = shift;
     my $file   = shift;
     my $offset = shift;
