@@ -8,7 +8,7 @@ use Geo::ShapeFile::Point;
 use parent qw /Geo::ShapeFile/;
 our $VERSION = '2.55_001';
 
-my $is_little_endian = unpack 'b', (pack 'S', 1 );
+my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
 
 sub new {
@@ -323,7 +323,7 @@ sub extract_doubles {
 
     foreach ( @what ) {
         my $tmp = substr $self->{shp_data}, 0, $size, '';
-        $self->{ $_ } = $is_little_endian
+        $self->{ $_ } = $little_endian_sys
             ? (unpack $template, $tmp )
             : (unpack $template, scalar reverse $tmp );
     }
@@ -335,7 +335,7 @@ sub extract_count_doubles {
     my $label = shift;
 
     my $tmp = substr $self->{shp_data}, 0, $count*8, '';
-    my @tmp = $is_little_endian
+    my @tmp = $little_endian_sys
         ? (unpack 'd'.$count, $tmp )
         : (reverse unpack( 'd' . $count, scalar ( reverse( $tmp ) ) ) );
 
@@ -349,7 +349,7 @@ sub extract_points {
 
     my $data = substr $self->{shp_data}, 0, $count * 16, '';
 
-    my @ps = $is_little_endian
+    my @ps = $little_endian_sys
         ? (unpack 'd*', $data )
         : (reverse unpack 'd*', scalar reverse $data );
 

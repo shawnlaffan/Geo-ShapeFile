@@ -12,7 +12,7 @@ use Tree::R;
 
 our $VERSION = '2.55_001';
 
-my $is_little_endian = unpack 'b', (pack 'S', 1 );
+my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
 # Preloaded methods go here.
 sub new {
@@ -198,7 +198,7 @@ sub read_shx_shp_header {
         $self->{$which . '_z_min'}, $self->{$which . '_z_max'},
         $self->{$which . '_m_min'}, $self->{$which . '_m_max'},
     ) = (
-        $is_little_endian
+        $little_endian_sys
             ? (unpack 'd8', $doubles )
             : (reverse unpack 'd8', scalar reverse $doubles)
     );
@@ -573,27 +573,27 @@ sub shapes_in_area {
     my @results = ();
     SHAPE:
     foreach my $shp_id (1 .. $self->shapes) {
-        my($offset, $content_length) = $self->get_shx_record($shp_id);
-        my $type = unpack 'V', $self->get_bytes('shp', $offset * 2 + 8, 4);
+        my ($offset, $content_length) = $self->get_shx_record($shp_id);
+        my $type = unpack 'V', $self->get_bytes ('shp', $offset * 2 + 8, 4);
 
         next SHAPE if $self->type($type) eq 'Null';
 
         if ($self->type($type) =~ /^Point/) {
-            my $bytes = $self->get_bytes('shp', $offset * 2 +12, 16);
+            my $bytes = $self->get_bytes('shp', $offset * 2 + 12, 16);
             my ($x, $y) = (
-                $is_little_endian
+                $little_endian_sys
                     ? (unpack 'dd', $bytes )
                     : (reverse unpack 'dd', scalar reverse $bytes)
             );
             my $pt = Geo::ShapeFile::Point->new(X => $x, Y => $y);
-            if($self->area_contains_point($pt, @area)) {
+            if ($self->area_contains_point($pt, @area)) {
                 push @results, $shp_id;
             }
         }
         elsif ($self->type($type) =~ /^(PolyLine|Polygon|MultiPoint|MultiPatch)/) {
             my $bytes = $self->get_bytes('shp', ($offset * 2) + 12, 32);
             my @p = (
-                $is_little_endian
+                $little_endian_sys
                     ? (unpack 'd4', $bytes )
                     : (reverse unpack 'd4', scalar reverse $bytes )
             );
