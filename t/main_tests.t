@@ -5,11 +5,9 @@ use strict;
 use warnings;
 use rlib '../lib', './lib';
 
-BEGIN {
-    use_ok('Geo::ShapeFile');
-    use_ok('Geo::ShapeFile::Shape');
-    use_ok('Geo::ShapeFile::Point');
-};
+use Geo::ShapeFile;
+use Geo::ShapeFile::Shape;
+use Geo::ShapeFile::Point;
 
 #  should use $FindBin::bin for this
 my $dir = "t/test_data";
@@ -399,7 +397,7 @@ sub test_points_in_polygon {
         [-106.772, 28.420],
         [-114.397, 24.802],
     );
-    
+
     #  shape 23 is sonora
     my $test_poly = $shp->get_shp_record(23);
 
@@ -420,7 +418,7 @@ sub test_points_in_polygon {
     $shp = Geo::ShapeFile->new ("$dir/$filename");
     #  shape 83 has holes
     $test_poly = $shp->get_shp_record(83);
-    
+
     @in_coords = (
         [477418, 4762016],
         [476644, 4761530],
@@ -436,7 +434,7 @@ sub test_points_in_polygon {
         [478214, 4760627],  # outside but in bounds
         [477499, 4762436],  # outside bounds
     );
-    
+
     foreach my $coord (@in_coords) {
         my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
         my $result = $test_poly->contains_point ($point);
@@ -448,9 +446,21 @@ sub test_points_in_polygon {
         my $result = $test_poly->contains_point ($point);
         ok (!$result, "$point is not in $filename polygon 83");
     }
-    
-    my $ix = $test_poly->build_spatial_index;
-    
+
+    #  Now with the spatial index.
+    ##  explicitly build it 
+    #my $ix = $test_poly->build_spatial_index;
+    foreach my $coord (@in_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point, 0);
+        ok ($result, "$point is in $filename polygon 83 (indexed)");
+    }
+    foreach my $coord (@out_coords) {
+        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+        my $result = $test_poly->contains_point ($point);
+        ok (!$result, "$point is not in $filename polygon 83 (indexed)");
+    }
+
     return;
 }
 

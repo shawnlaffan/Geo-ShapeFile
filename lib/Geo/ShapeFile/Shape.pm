@@ -401,10 +401,16 @@ sub get_part {
     my $self  = shift;
     my $index = shift;
 
+    croak 'index passed to get_part must be >0'
+      if $index <= 0;
+
     $index -= 1; # shift to a 0 index
 
     #  $parts is an array of starting indexes in the $points array
     my $parts  = $self->parts;
+    croak 'index exceeds number of parts'
+      if $index > $#$parts;
+
     my $points = $self->points;
     my $beg    = $parts->[$index]   || 0;
     my $end    = $parts->[$index+1] || 0;  #  if we use 5.010 then we can use the // operator here
@@ -481,7 +487,10 @@ sub has_point {
 }
 
 sub contains_point {
-    my ( $self, $point ) = @_;
+    my ( $self, $point, $index_res ) = @_;
+
+    return $self->_contains_point_use_index ($point, $index_res)
+      if $self->get_spatial_index || defined $index_res;
 
     return 0 if !$self->bounds_contains_point( $point );
 
@@ -504,9 +513,7 @@ sub contains_point {
             my $x2 = $p2->get_x - $x0;
             my $y2 = $p2->get_y - $y0;
 
-            #  SWL:  I think this is only checking sidedness when it can change.
-            #  If we can only be the same side (left or right) as the previous vertex
-            #  then there is no need to check more closely.
+            #  does the ray intersect the segment?
             if (($y2 >= 0) != ($y1 >= 0)) {
                 my $isl = $x1 * $y2 - $y1 * $x2;
                 if ( $y2 > $y1 ) {
@@ -527,26 +534,108 @@ sub contains_point {
     return $a;
 }
 
+sub _contains_point_use_index {
+    my ( $self, $point, $index_res ) = @_;
 
-#  add the polygon's segments to a spatial index
-#  where the index boxes are as wide as the shape
-#  todo: Make the width that of the part.
+    return 0 if !$self->bounds_contains_point( $point );
+
+    my $sp_index_hash = $self->get_spatial_index || $self->build_spatial_index ($index_res);
+
+    my $a = 0;
+    my ( $x0, $y0 ) = ( $point->get_x, $point->get_y );
+
+    my @parts = $self->parts;
+    my $num_parts = scalar @parts;
+
+    #  $x1, $x2, $y1 and $y2 are offsets from the point we are checking
+  PART_ID:
+    foreach my $part_index (1 .. $num_parts) {
+        #my $part_id = $parts[$part_index];
+        my $sp_index = $sp_index_hash->{$part_index};
+
+        my @results;
+        $sp_index->query_point($x0, $y0, \@results);
+
+        #  skip if not in this part's bounding box
+        next PART_ID if !scalar @results;
+
+        # segments spanning the index's bounding box
+        for my $segment (@results) {
+
+            my $x1 = $segment->[0]->get_x - $x0;
+            my $y1 = $segment->[0]->get_y - $y0;
+            my $x2 = $segment->[1]->get_x - $x0;
+            my $y2 = $segment->[1]->get_y - $y0;
+
+            #  does the ray intersect the segment?
+            if (($y2 >= 0) != ($y1 >= 0)) {
+                my $isl = $x1 * $y2 - $y1 * $x2;
+                if ( $y2 > $y1 ) {
+                    if ($isl > 0) {
+                        $a--;
+                    }
+                }
+                else {
+                    if ($isl < 0) {
+                        $a++;
+                    }
+                }
+            }
+        }
+    }
+
+    return $a;
+}
+
+
+#  We could trigger a build if undefined,
+#  but save that for later.  
+sub get_spatial_index {
+    my $self = shift;
+
+    return $self->{_spatial_indexes};
+}
+
+#  Add the polygon's segments to a spatial index
+#  where the index boxes are as wide as the part
+#  they are in.
+#  The set of spatial indexes is a hash keyed by
+#  the part ID.
+#  $n is the number of boxes - need an automatic way of calculating, poss f(y_range / x_range)
 sub build_spatial_index {
     my $self = shift;
-    my $n    = shift;  #  number of boxes
+    my $n    = shift || 10;
 
-    my $sp_index = Tree::R->new;
+    croak 'Cannot build spatial index with negative number of boxes'
+      if $n <= 0;
+
+    my %sp_indexes;
 
     my @parts = $self->parts;
 
-    my ($x_min, $x_max);
-    if (scalar @parts == 1) {
-        $x_min = $self->x_min;
-        $x_max = $self->x_max;
-    }
-
-
+    my $part_id = 0;
     foreach my $part (@parts) {
+        my $sp_index = Tree::R->new;
+        $part_id ++;  #  parts are indexed base 1
+
+        my %bounds = $self->_get_part_bounds ($part_id);
+
+        my ($x_min, $x_max, $y_min, $y_max) = @bounds{qw /x_min x_max y_min y_max/};
+        my $y_range = $y_max - $y_min;
+        my $y_tol   = $y_range / 10000;
+        $y_range   += 2 * $y_tol;
+        $y_min     -= $y_tol;  #  make sure everything is inside the boxes - no edge sitters
+        $y_max     += $y_tol;
+
+        my $box_ht  = $y_range / $n;
+
+        my @box_y_vals;
+        my $y = $y_min;
+        foreach my $i (1 .. $n) {
+            push @box_y_vals, [$y, $y + $box_ht];
+            $y += $box_ht;
+        }
+
         #  need to calculate the bounds for each part if more than one
         if (!defined $x_min) {
             my %bounds = $self->_get_part_bounds ($part);
@@ -554,7 +643,7 @@ sub build_spatial_index {
             $x_max = $bounds{x_max};
         }
 
-        my $segments = $self->get_segments ($part);
+        my $segments = $self->get_segments ($part_id);
 
         foreach my $segment (@$segments) {
             my $y0 = $segment->[0]->get_y;
@@ -565,17 +654,45 @@ sub build_spatial_index {
                 ($y0, $y1) = ($y1, $y0);
             }
 
-            my @bbox = ($x_min, $y0, $x_max, $y1);
-            $sp_index->insert($segment, @bbox);
+            #  add the segment to each box it intersects
+            my $in_box = 0;
+          BOX:
+            foreach my $bnd (@box_y_vals) {
+                my $y_min = $bnd->[0];
+                my $y_max = $bnd->[1];
+
+                #  skip if we don't span this box
+                if ($y1 <  $y_min || $y0 >= $y_max) {
+                    last BOX if $in_box;  #  we have moved out
+                    next BOX;             #  or try the next one
+                }
+
+                #  more tweaking would involve getting the
+                #  min and max X across the segments to define each box
+                my @bbox = ($x_min, $y_min, $x_max, $y_max);
+                $sp_index->insert($segment, @bbox);
+                $in_box++;
+            }
+            #print "$part_id " . scalar @$segments . " $in_box\n";
         }
+
+        #  debug checks
+        #my @results = ();
+        #$sp_index->query_completely_within_rect(0, 0, 10**8, 10**8, \@results);
+        #my %ex;
+        #use List::MoreUtils qw /uniq/;
+        #my @uniq = uniq @results;
+        #print scalar @results . ' ' . (scalar @$segments) . ' ' . scalar @uniq . "\n";
 
         #  clear the bounds
         ($x_min, $x_max) = (undef, undef);
+
+        $sp_indexes{$part_id} = $sp_index;
     }
 
-    $self->{spatial_index} = $sp_index;
+    $self->{_spatial_indexes} = \%sp_indexes;
 
-    return $sp_index;
+    return wantarray ? %sp_indexes : \%sp_indexes;
 }
 
 sub _get_part_bounds {
