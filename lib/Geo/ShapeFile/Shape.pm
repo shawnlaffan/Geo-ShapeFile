@@ -53,8 +53,8 @@ sub parse_shp {
 
     $self->{source} = $self->{shp_data} = shift;
 
-    $self->extract_ints('big', 'shp_record_number', 'shp_content_length');
-    $self->extract_ints('little', 'shp_shape_type');
+    $self->_extract_ints('big', 'shp_record_number', 'shp_content_length');
+    $self->_extract_ints('little', 'shp_shape_type');
 
     my $parser = '_parse_shp_' . $self->type($self->{shp_shape_type});
 
@@ -115,7 +115,7 @@ sub calculate_bounds {
 
 sub _parse_shp_Point {
     my $self = shift;
-    $self->extract_doubles('shp_X', 'shp_Y');
+    $self->_extract_doubles('shp_X', 'shp_Y');
     $self->{shp_points} = [Geo::ShapeFile::Point->new(
         X => $self->{shp_X},
         Y => $self->{shp_Y},
@@ -133,8 +133,8 @@ sub _parse_shp_Point {
 sub _parse_shp_PolyLine {
     my $self = shift;
 
-    $self->extract_bounds();
-    $self->extract_parts_and_points();
+    $self->_extract_bounds();
+    $self->_extract_parts_and_points();
 }
 #  PolyLine
 # Double[4]             Box         // Bounding Box
@@ -146,8 +146,8 @@ sub _parse_shp_PolyLine {
 sub _parse_shp_Polygon {
     my $self = shift;
 
-    $self->extract_bounds();
-    $self->extract_parts_and_points();
+    $self->_extract_bounds();
+    $self->_extract_parts_and_points();
 }
 #  Polygon
 # Double[4]          Box        // Bounding Box
@@ -159,9 +159,9 @@ sub _parse_shp_Polygon {
 sub _parse_shp_MultiPoint {
     my $self = shift;
 
-    $self->extract_bounds();
-    $self->extract_ints('little', 'shp_num_points');
-    $self->extract_points($self->{shp_num_points}, 'shp_points');
+    $self->_extract_bounds();
+    $self->_extract_ints('little', 'shp_num_points');
+    $self->_extract_points($self->{shp_num_points}, 'shp_points');
 }
 #  MultiPoint
 # Double[4]          Box        // Bounding Box
@@ -172,7 +172,7 @@ sub _parse_shp_PointZ {
     my $self = shift;
 
     $self->_parse_shp_Point();
-    $self->extract_doubles('shp_Z', 'shp_M');
+    $self->_extract_doubles('shp_Z', 'shp_M');
     $self->{shp_points}->[0]->Z($self->{shp_Z});
     $self->{shp_points}->[0]->M($self->{shp_M});
 }
@@ -185,8 +185,8 @@ sub _parse_shp_PolyLineZ {
     my $self = shift;
 
     $self->_parse_shp_PolyLine();
-    $self->extract_z_data();
-    $self->extract_m_data();
+    $self->_extract_z_data();
+    $self->_extract_m_data();
 }
 #  PolyLineZ
 # PolyLine +
@@ -199,8 +199,8 @@ sub _parse_shp_PolygonZ {
     my $self = shift;
 
     $self->_parse_shp_Polygon();
-    $self->extract_z_data();
-    $self->extract_m_data();
+    $self->_extract_z_data();
+    $self->_extract_m_data();
 }
 #  PolygonZ
 # Polygon +
@@ -213,8 +213,8 @@ sub _parse_shp_MultiPointZ {
     my $self = shift;
 
     $self->_parse_shp_MultiPoint();
-    $self->extract_z_data();
-    $self->extract_m_data();
+    $self->_extract_z_data();
+    $self->_extract_m_data();
 }
 #  MultiPointZ
 # MultiPoint +
@@ -227,7 +227,7 @@ sub _parse_shp_PointM {
     my $self = shift;
 
     $self->_parse_shp_Point();
-    $self->extract_doubles('shp_M');
+    $self->_extract_doubles('shp_M');
     $self->{shp_points}->[0]->M($self->{shp_M});
 }
 #  PointM
@@ -238,7 +238,7 @@ sub _parse_shp_PolyLineM {
     my $self = shift;
 
     $self->_parse_shp_PolyLine();
-    $self->extract_m_data();
+    $self->_extract_m_data();
 }
 #  PolyLineM
 # PolyLine +
@@ -249,7 +249,7 @@ sub _parse_shp_PolygonM {
     my $self = shift;
 
     $self->_parse_shp_Polygon();
-    $self->extract_m_data();
+    $self->_extract_m_data();
 }
 #  PolygonM
 # Polygon +
@@ -260,7 +260,7 @@ sub _parse_shp_MultiPointM {
     my $self = shift;
 
     $self->_parse_shp_MultiPoint();
-    $self->extract_m_datextract_m_data();
+    $self->_extract_m_datextract_m_data();
 }
 #  MultiPointM
 # MultiPoint
@@ -270,10 +270,10 @@ sub _parse_shp_MultiPointM {
 sub _parse_shp_MultiPatch {
     my $self = shift;
 
-    $self->extract_bounds();
-    $self->extract_parts_and_points();
-    $self->extract_z_data();
-    $self->extract_m_data();
+    $self->_extract_bounds();
+    $self->_extract_parts_and_points();
+    $self->_extract_z_data();
+    $self->_extract_m_data();
 }
 # MultiPatch
 # Double[4]           BoundingBox
@@ -287,23 +287,23 @@ sub _parse_shp_MultiPatch {
 # Double[2]           M Range
 # Double[NumPoints]   M Array
 
-sub extract_bounds {
+sub _extract_bounds {
     my $self = shift;
 
-    $self->extract_doubles(qw/shp_x_min shp_y_min shp_x_max shp_y_max/);
+    $self->_extract_doubles(qw/shp_x_min shp_y_min shp_x_max shp_y_max/);
 }
 
-sub extract_ints {
+sub _extract_ints {
     my $self = shift;
     my $end = shift;
     my @what = @_;
 
     my $template = ($end =~ /^l/i) ? 'V' :'N';
 
-    $self->extract_and_unpack(4, $template, @what);
+    $self->_extract_and_unpack(4, $template, @what);
 }
 
-sub extract_count_ints {
+sub _extract_count_ints {
     my $self = shift;
     my $count = shift;
     my $end = shift;
@@ -318,7 +318,7 @@ sub extract_count_ints {
     $self->{$label} = [@tmp];
 }
 
-sub extract_doubles {
+sub _extract_doubles {
     my $self = shift;
     my @what = @_;
     my $size = 8;
@@ -332,7 +332,7 @@ sub extract_doubles {
     }
 }
 
-sub extract_count_doubles {
+sub _extract_count_doubles {
     my $self = shift;
     my $count = shift;
     my $label = shift;
@@ -345,7 +345,7 @@ sub extract_count_doubles {
     $self->{$label} = [@tmp];
 }
 
-sub extract_points {
+sub _extract_points {
     my $self = shift;
     my $count = shift;
     my $label = shift;
@@ -364,7 +364,7 @@ sub extract_points {
     $self->{$label} = [@p];
 }
 
-sub extract_and_unpack {
+sub _extract_and_unpack {
     my $self = shift;
     my $size = shift;
     my $template = shift;
@@ -432,34 +432,34 @@ sub shape_id {
     return $self->{shp_record_number};
 }
 
-sub extract_z_data {
+sub _extract_z_data {
     my $self = shift;
 
-    $self->extract_doubles('shp_z_min', 'shp_z_max');
-    $self->extract_count_doubles($self->{shp_num_points}, 'shp_z_data');
+    $self->_extract_doubles('shp_z_min', 'shp_z_max');
+    $self->_extract_count_doubles($self->{shp_num_points}, 'shp_z_data');
     my @zdata = @{delete $self->{shp_z_data}};
     for (0 .. $#zdata) {
         $self->{shp_points}->[$_]->Z($zdata[$_]);
     }
 }
 
-sub extract_m_data {
+sub _extract_m_data {
     my $self = shift;
 
-    $self->extract_doubles ('shp_m_min', 'shp_m_max');
-    $self->extract_count_doubles($self->{shp_num_points}, 'shp_m_data');
+    $self->_extract_doubles ('shp_m_min', 'shp_m_max');
+    $self->_extract_count_doubles($self->{shp_num_points}, 'shp_m_data');
     my @mdata = @{delete $self->{shp_m_data}};
     for (0 .. $#mdata) {
         $self->{shp_points}->[$_]->M($mdata[$_]);
     }
 }
 
-sub extract_parts_and_points {
+sub _extract_parts_and_points {
     my $self = shift;
 
-    $self->extract_ints('little', 'shp_num_parts', 'shp_num_points');
-    $self->extract_count_ints($self->{shp_num_parts}, 'little', 'shp_parts');
-    $self->extract_points($self->{shp_num_points}, 'shp_points');
+    $self->_extract_ints('little', 'shp_num_parts', 'shp_num_points');
+    $self->_extract_count_ints($self->{shp_num_parts}, 'little', 'shp_parts');
+    $self->_extract_points($self->{shp_num_points}, 'shp_points');
 }
 
 

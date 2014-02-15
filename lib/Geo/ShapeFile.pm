@@ -648,14 +648,15 @@ sub bounds {
     );
 }
 
-sub extract_ints {
+# is this ever called?  
+sub _extract_ints {
     my $self = shift;
     my $end = shift;
     my @what = @_;
 
     my $template = ($end =~ /^l/i) ? 'V': 'N';
 
-    $self->extract_and_unpack(4, $template, @what);
+    $self->_extract_and_unpack(4, $template, @what);
     foreach (@what) {
         $self->{$_} = $self->{$_};
     }
