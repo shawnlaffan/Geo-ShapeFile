@@ -9,6 +9,7 @@ WriteMakefile(
         'Math::Trig' => 0,
         'List::Util' => 0,
         'parent'     => 0,
+        'Tree::R'    => 0,
     },
     BUILD_REQUIRES => {
         'rlib'       => 0,

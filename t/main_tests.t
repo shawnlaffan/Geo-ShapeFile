@@ -43,6 +43,7 @@ sub main {
     test_files();
     test_empty_dbf();
     test_points_in_polygon();
+    test_spatial_index();
 
     done_testing;
     return 0;
@@ -119,6 +120,8 @@ sub test_end_point_slope {
         $shape->has_point($start_pt),
         $shape->has_point($end_pt);
     print;
+
+    return;
 }
 
 
@@ -261,6 +264,8 @@ sub test_files {
         };
 
     }
+
+    return;
 }
 
 
@@ -368,10 +373,11 @@ sub test_corners {
     cmp_ok ($ll->Y, '<', $ul->Y, 'corners: ll is below ul');
     cmp_ok ($lr->Y, '<', $ur->Y, 'corners: lr is below ur');
 
+    return;
 }
 
 sub test_points_in_polygon {
-    #  need a shape with holes in it, but states is a multipart poly
+    #  need a shape with holes in it, but states is a multipart poly (poly.shp does the job - need to add tests)
     my $shp = Geo::ShapeFile->new ("$dir/states");
 
     my @in_coords = (
@@ -404,6 +410,68 @@ sub test_points_in_polygon {
         my $result = $test_poly->contains_point ($point);
         ok (!$result, "$point is not in polygon 1");
     }
-    
 
+    return;
 }
+
+
+sub test_spatial_index {
+    #  polygon.shp has a variety of polygons
+    my $poly_file = "$dir/polygon";
+
+    my $shp_use_idx = Geo::ShapeFile->new ($poly_file);
+    my $shp_no_idx  = Geo::ShapeFile->new($poly_file);
+
+    my $sp_index = $shp_use_idx->build_spatial_index;
+
+    ok ($sp_index, 'got a spatial index');
+
+    my @bounds = $shp_use_idx->bounds;
+    my $objects = [];
+    $sp_index->query_completely_within_rect (@bounds, $objects);
+
+    my @shapes = $shp_use_idx->get_all_shapes;
+
+    is (
+        scalar @$objects,
+        scalar @shapes,
+        'index contains same number of objects as shapefile',
+    );
+
+    #  need to sort the arrays to compare them
+    my @sorted_shapes  = $shp_use_idx->get_shapes_sorted;
+    my @sorted_objects = $shp_use_idx->get_shapes_sorted ($objects);
+
+    is_deeply (
+        \@sorted_objects,
+        \@sorted_shapes,
+        'spatial_index contains all objects',
+    );
+
+    #  now get the mid-point for a lower-left bounds
+    my $mid_x =  ($bounds[0] + $bounds[2]) / 2;
+    my $mid_y =  ($bounds[1] + $bounds[3]) / 2;
+    my @bnd_ll = ($bounds[0], $bounds[1], $mid_x, $mid_y);
+
+    foreach my $expected ([\@bounds, 474], [\@bnd_ll, 130]) {
+        my $bnds = $expected->[0];
+        my $shape_count = $expected->[1];
+
+        my $shapes_in_area_no_idx  = $shp_no_idx->shapes_in_area (@$bnds);
+        my $shapes_in_area_use_idx = $shp_use_idx->shapes_in_area (@$bnds);
+    
+        my $message = 'shapes_in_area same with and without spatial index, bounds: '
+            . join ' ', @$bnds;
+
+        is (scalar @$shapes_in_area_no_idx,  $shape_count, 'got right number of shapes back, no index');
+        is (scalar @$shapes_in_area_use_idx, $shape_count, 'got right number of shapes back, use index');
+
+        is_deeply (
+            [sort @$shapes_in_area_no_idx],
+            [sort @$shapes_in_area_use_idx],
+            $message,
+        );
+    }       
+    
+}
+

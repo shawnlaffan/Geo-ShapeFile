@@ -7,8 +7,10 @@ use IO::File;
 use Geo::ShapeFile::Shape;
 use Config;
 use List::Util qw /min max/;
+use Tree::R;
 
-our $VERSION = '2.54';
+
+our $VERSION = '2.55_001';
 
 my $is_little_endian = unpack 'b', (pack 'S', 1 );
 
@@ -89,6 +91,85 @@ sub cache {
         $self->{_object_cache}->{$type}->{$obj} = $cache;
     }
     return $self->{_object_cache}->{$type}->{$obj};
+}
+
+#  This will trigger the various caching
+#  so we end up with the file in memory.
+#  Not an issue for most files.
+sub get_all_shapes {
+    my $self = shift;
+
+    my @shapes;
+
+    foreach my $id (1 .. $self->shapes()) {
+        my $shape = $self->get_shp_record($id);
+        push @shapes, $shape;
+    }
+
+    return wantarray ? @shapes : \@shapes;
+}
+
+sub get_shapes_sorted {
+    my $self   = shift;
+    my $shapes = shift;
+    my $sub    = shift;
+
+    if (!defined $sub) {
+        $sub = sub {
+            my ($s1, $s2) = @_;
+            return $s1->{shp_record_number} <=> $s2->{shp_record_number};
+        };
+    }
+
+    if (!defined $shapes) {
+        $shapes = $self->get_all_shapes;
+    }
+
+    my @sorted = sort {$sub->($a, $b)} @$shapes;
+
+    return wantarray ? @sorted : \@sorted;
+}
+
+sub get_shapes_sorted_spatially {
+    my $self   = shift;
+    my $shapes = shift;
+    my $sub    = shift;
+
+    if (!defined $sub) {
+        $sub = sub {
+            my ($s1, $s2) = @_;
+            return
+                    $s1->x_min <=> $s2->x_min
+                 || $s1->y_min <=> $s2->y_min
+                 || $s1->x_max <=> $s2->x_max
+                 || $s1->y_max <=> $s2->y_max
+                 || $s1->shape_id <=> $s2->shape_id
+                 ;
+        };
+    }
+
+    return $self->get_shapes_sorted ($shapes, $sub);
+}
+
+sub build_spatial_index {
+    my $self = shift;
+
+    my $shapes = $self->get_all_shapes;
+
+    my $rtree = Tree::R->new();
+    foreach my $shape (@$shapes) {
+        my @bbox = ($shape->x_min, $shape->y_min, $shape->x_max, $shape->y_max);
+        $rtree->insert($shape, @bbox);
+    }
+
+    $self->{_spatial_index} = $rtree;
+
+    return $rtree;
+}
+
+sub get_spatial_index {
+    my $self = shift;
+    return $self->{_spatial_index};
 }
 
 
@@ -249,63 +330,6 @@ sub generate_dbf_header {
         0, # TODO - header_length,
         0, # TODO - record_length,
     ;
-
-#  SWL, 2014-02-09:  Unsure of the purpose of this commented code as yet
-#    my $ls = $self->{dbf_header_length} +
-#        ($self->{dbf_num_records}*$self->{dbf_record_length}) +
-#        1;
-#    my $li = -s $self->{filebase}.".dbf";
-#
-#    if($ls != $li) {
-#        croak "dbf: file wrong size (should be $ls, but found $li)";
-#    }
-#
-#    my $header = $self->get_bytes('dbf',32, $self->{dbf_header_length}-32);
-#    my $count = 0;
-#    $self->{dbf_header_info} = [];
-#
-#    while($header) {
-#        my $tmp = substr($header,0,32,'');
-#        my $chr = substr($tmp,0,1);
-#
-#        if(ord $chr == 0x0D) { last; }
-#        if(length($tmp) < 32) { last; }
-#
-#        my %tmp = ();
-#        (
-#            $tmp{name},
-#            $tmp{type},
-#            $tmp{size},
-#            $tmp{decimals}
-#        ) = unpack("Z11 Z x4 C2", $tmp);
-#
-#        $self->{dbf_field_info}->[$count] = {%tmp};
-#        
-#        $count++;
-#    }
-#    $self->{dbf_fields} = $count;
-#    if($count < 1) { croak "dbf: Not enough fields ($count < 1)"; }
-#
-#    my @template = ();
-#    foreach(@{$self->{dbf_field_info}}) {
-#        if($_->{size} < 1) {
-#            croak "dbf: Field $_->{name} too short ($_->{size} bytes)";
-#        }
-#        if($_->{size} > 4000) {
-#            croak "dbf: Field $_->{name} too long ($_->{size} bytes)";
-#        }
-#
-#        push(@template,"A".$_->{size});
-#    }
-#    $self->{dbf_record_template} = join(' ',@template);
-#
-#    my @field_names = ();
-#    foreach(@{$self->{dbf_field_info}}) {
-#        push(@field_names, $_->{name});
-#    }
-#    $self->{dbf_field_names} = [@field_names];
-#
-#    return 1;
 }
 
 sub get_dbf_record {
@@ -530,10 +554,21 @@ sub get_shp_record_header {
     return ($number, $content_length);
 }
 
-# TODO - cache this
+
+#  returns indexes, not objects - need to change that or add method for shape_objects_in_area
 sub shapes_in_area {
     my $self = shift;
     my @area = @_; # x_min, y_min, x_max, y_max,
+
+    if (my $sp_index = $self->get_spatial_index) {
+        my $shapes = [];
+        $sp_index->query_partly_within_rect (@area, $shapes);
+        my @indexes;
+        foreach my $shape (@$shapes) {
+            push @indexes, $shape->shape_id;
+        }
+        return wantarray ? @indexes : \@indexes;
+    }
 
     my @results = ();
     SHAPE:
@@ -571,7 +606,7 @@ sub shapes_in_area {
         }
     }
 
-    return @results;
+    return wantarray ? @results : \@results;
 }
 
 sub check_in_area {
@@ -933,7 +968,32 @@ keys of x_min, y_min, x_max, y_max, with the values for each of those bounds.
 =item get_dbf_field_names()
 
 Returns an array of the field names in the dbf file, in file order.
-Returns an array reference if used in scalar context.  
+Returns an array reference if used in scalar context.
+
+=item get_all_shapes()
+Returns an array (or arrayref in scalar context) with all shape objects in the
+shapefile.
+
+=item get_shapes_sorted()
+=item get_shapes_sorted(\@shapes, \@sort_sub)
+Returns an array (or arrayref in scalar context) of shape objects sorted by ID.
+Defaults to all shapes, but will also take an array of Geo::ShapeFile::Shape objects.
+Sorts by record number by default, but you can pass your own sub for more fancy work.
+
+=item get_shapes_sorted_spatially()
+=item get_shapes_sorted_spatially(\@shapes, \@sort_sub)
+Convenience wrapper around get_shapes_sorted to sort spatially (south-west to north-east)
+then by record number.  You can pass your own shapes and sort sub.
+The sort sub does not need to be spatial since it will sort by whatever you say,
+but it is your code so do what you like.
+
+
+=item build_spatial_index()
+Builds a spatial index (a L<Tree::R> object) and returns it.  This will be used internally for
+many of the routines, but you can use it directly if useful.
+
+=item get_spatial_index()
+Returns the spatial index object, or undef if one has not been built.
 
 =back
 
