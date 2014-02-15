@@ -42,7 +42,8 @@ sub main {
     test_shapepoint();
     test_files();
     test_empty_dbf();
-    
+    test_points_in_polygon();
+
     done_testing;
     return 0;
 }
