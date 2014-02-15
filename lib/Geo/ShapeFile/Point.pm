@@ -338,6 +338,11 @@ and/or M values to be assigned to the point.
 
 Set/retrieve the X, Y, Z, or M values for this object.
 
+=item get_x() get_y() get_z() get_m()
+
+Get the X, Y, Z, or M values for this object.  Slightly faster than the
+dual purpose set/retrive methods so good for heavy usage parts of your code.  
+
 =item x_min() x_max() y_min() y_max()
 
 =item z_min() z_max() m_min() m_max()
