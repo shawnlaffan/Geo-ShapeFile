@@ -629,7 +629,7 @@ sub check_in_area {
 }
 
 #  SWL: not used anymore - remove?
-sub between {
+sub _between {
     my $self  = shift;
     my $check = shift;
 
