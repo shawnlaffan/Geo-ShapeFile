@@ -56,7 +56,7 @@ sub parse_shp {
     $self->extract_ints('big', 'shp_record_number', 'shp_content_length');
     $self->extract_ints('little', 'shp_shape_type');
 
-    my $parser = 'parse_shp_' . $self->type($self->{shp_shape_type});
+    my $parser = '_parse_shp_' . $self->type($self->{shp_shape_type});
 
     croak "Can't parse shape_type $self->{shp_shape_type}"
       if !$self->can($parser);
@@ -73,7 +73,7 @@ sub parse_shp {
     }
 }
 
-sub parse_shp_Null {
+sub _parse_shp_Null {
     my $self = shift;
 }
 
@@ -113,7 +113,7 @@ sub calculate_bounds {
     return %bounds;
 }
 
-sub parse_shp_Point {
+sub _parse_shp_Point {
     my $self = shift;
     $self->extract_doubles('shp_X', 'shp_Y');
     $self->{shp_points} = [Geo::ShapeFile::Point->new(
@@ -130,7 +130,7 @@ sub parse_shp_Point {
 # Double        X       // X coordinate
 # Double        Y       // Y coordinate
 
-sub parse_shp_PolyLine {
+sub _parse_shp_PolyLine {
     my $self = shift;
 
     $self->extract_bounds();
@@ -143,7 +143,7 @@ sub parse_shp_PolyLine {
 # Integer[NumParts]     Parts       // Index to first point in part
 # Point[NumPoints]      Points      // Points for all parts
 
-sub parse_shp_Polygon {
+sub _parse_shp_Polygon {
     my $self = shift;
 
     $self->extract_bounds();
@@ -156,7 +156,7 @@ sub parse_shp_Polygon {
 # Integer[NumParts]  Parts      // Index to First Point in Part
 # Point[NumPoints]   Points     // Points for All Parts
 
-sub parse_shp_MultiPoint {
+sub _parse_shp_MultiPoint {
     my $self = shift;
 
     $self->extract_bounds();
@@ -168,10 +168,10 @@ sub parse_shp_MultiPoint {
 # Integer            NumPoints  // Number of Points
 # Point[NumPoints]   Points     // The points in the set
 
-sub parse_shp_PointZ {
+sub _parse_shp_PointZ {
     my $self = shift;
 
-    $self->parse_shp_Point();
+    $self->_parse_shp_Point();
     $self->extract_doubles('shp_Z', 'shp_M');
     $self->{shp_points}->[0]->Z($self->{shp_Z});
     $self->{shp_points}->[0]->M($self->{shp_M});
@@ -181,10 +181,10 @@ sub parse_shp_PointZ {
 # Double Z
 # Double M
 
-sub parse_shp_PolyLineZ {
+sub _parse_shp_PolyLineZ {
     my $self = shift;
 
-    $self->parse_shp_PolyLine();
+    $self->_parse_shp_PolyLine();
     $self->extract_z_data();
     $self->extract_m_data();
 }
@@ -195,10 +195,10 @@ sub parse_shp_PolyLineZ {
 # Double[2]             M Range
 # Double[NumPoints]     M Array
 
-sub parse_shp_PolygonZ {
+sub _parse_shp_PolygonZ {
     my $self = shift;
 
-    $self->parse_shp_Polygon();
+    $self->_parse_shp_Polygon();
     $self->extract_z_data();
     $self->extract_m_data();
 }
@@ -209,10 +209,10 @@ sub parse_shp_PolygonZ {
 # Double[2]             M Range
 # Double[NumPoints]     M Array
 
-sub parse_shp_MultiPointZ {
+sub _parse_shp_MultiPointZ {
     my $self = shift;
 
-    $self->parse_shp_MultiPoint();
+    $self->_parse_shp_MultiPoint();
     $self->extract_z_data();
     $self->extract_m_data();
 }
@@ -223,10 +223,10 @@ sub parse_shp_MultiPointZ {
 # Double[2]         M Range
 # Double[NumPoints] M Array
 
-sub parse_shp_PointM {
+sub _parse_shp_PointM {
     my $self = shift;
 
-    $self->parse_shp_Point();
+    $self->_parse_shp_Point();
     $self->extract_doubles('shp_M');
     $self->{shp_points}->[0]->M($self->{shp_M});
 }
@@ -234,10 +234,10 @@ sub parse_shp_PointM {
 # Point +
 # Double M // M coordinate
 
-sub parse_shp_PolyLineM {
+sub _parse_shp_PolyLineM {
     my $self = shift;
 
-    $self->parse_shp_PolyLine();
+    $self->_parse_shp_PolyLine();
     $self->extract_m_data();
 }
 #  PolyLineM
@@ -245,10 +245,10 @@ sub parse_shp_PolyLineM {
 # Double[2]             MRange      // Bounding measure range
 # Double[NumPoints]     MArray      // Measures for all points
 
-sub parse_shp_PolygonM {
+sub _parse_shp_PolygonM {
     my $self = shift;
 
-    $self->parse_shp_Polygon();
+    $self->_parse_shp_Polygon();
     $self->extract_m_data();
 }
 #  PolygonM
@@ -256,10 +256,10 @@ sub parse_shp_PolygonM {
 # Double[2]             MRange      // Bounding Measure Range
 # Double[NumPoints]     MArray      // Measures for all points
 
-sub parse_shp_MultiPointM {
+sub _parse_shp_MultiPointM {
     my $self = shift;
 
-    $self->parse_shp_MultiPoint();
+    $self->_parse_shp_MultiPoint();
     $self->extract_m_datextract_m_data();
 }
 #  MultiPointM
@@ -267,7 +267,7 @@ sub parse_shp_MultiPointM {
 # Double[2]         MRange      // Bounding measure range
 # Double[NumPoints] MArray      // Measures
 
-sub parse_shp_MultiPatch {
+sub _parse_shp_MultiPatch {
     my $self = shift;
 
     $self->extract_bounds();
