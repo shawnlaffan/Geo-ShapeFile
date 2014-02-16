@@ -1,9 +1,16 @@
 Revision history for Geo::ShapeFile.
 
-2.55 2014-02-12
+2.55_001 2014-02-12
     - Shawn Laffan
+    - Add Geo::ShapeFile::Shape::Index as a simple 2-d block based index.
+    - Geo::Shape::ShapeFile now uses a spatial index for the segments.
+      This speeds up the contains_point routines by about 50-70% when used.
+      The index is opt-in at the moment, so will have no effect on existing code.
     - Geo::ShapeFile::get_part now returns an array ref in scalar context.
-    - Add parent to the list of dependencies in the makefile. 
+    - Geo::ShapeFile::Point::angle_to now works.
+    - Many of the undocumented methods have been renamed to use a leading underscore,
+      as they are private methods.  This avoids a number of POD test warnings.
+    - Add parent, POSIX and autovovofication to the list of dependencies in the makefile.
 
 2.54 2014-02-11
     - Shawn Laffan
