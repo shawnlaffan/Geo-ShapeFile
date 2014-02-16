@@ -115,18 +115,17 @@ sub angle_to {
 
     my $dp = $p2->subtract ($p1);
 
-    #  could use atan2 here, surely?
-    if ($dp->Y) {
-        # two distinct points
-        return rad2deg ( atan( $dp->Y / $dp->X ) )
-          if $dp->X;
+    my $x_off = $dp->get_x;
+    my $y_off = $dp->get_y;
 
-        # same X value
-        return $dp->Y > 0 ? 90 : -90;
+    return 0 if !($x_off || $y_off);
+
+    my $bearing = 90 - Math::Trig::rad2deg (Math::Trig::atan2 ($y_off, $x_off));
+    if ($bearing < 0) {
+        $bearing += 360;
     }
 
-    # same point
-    return 0;
+    return $bearing;
 }
 
 sub add {      _mathemagic('add',      @_); }

@@ -42,6 +42,7 @@ sub main {
     test_empty_dbf();
     test_points_in_polygon();
     test_spatial_index();
+    test_angle_to();
 
     done_testing;
     return 0;
@@ -89,15 +90,36 @@ sub test_shapepoint {
     
     
     return;
-
-    #  test some angles
-    foreach my $p1 (@pnt_objects[0..3]) {
-        foreach my $p2 (@pnt_objects[0..3]) {
-            my $angle = $p1->angle_to ($p2);
-            print "$p1 to $p2 is $angle\n";
-        }
-    }
     
+}
+
+sub test_angle_to {
+    my $p1 = Geo::ShapeFile::Point->new (X => 0, Y => 0);
+
+    my @checks = (
+        [ 0,  0,    0],
+        [ 1,  0,   90],
+        [ 1,  1,   45],
+        [ 0,  1,    0],
+        [-1,  1,  315],
+        [-1,  0,  270],
+        [-1, -1,  225],
+        [ 0, -1,  180],
+    );
+
+    foreach my $p2_data (@checks) {
+        my ($x, $y, $exp) = @$p2_data;
+        my $p2 = Geo::ShapeFile::Point->new (X => $x, Y => $y);
+        my $angle = $p1->angle_to ($p2);
+
+        is (
+            $angle,
+            $exp,
+            "Got expected angle of $exp for $x,$y",
+        );
+    }
+
+    return;
 }
 
 sub test_end_point_slope {
