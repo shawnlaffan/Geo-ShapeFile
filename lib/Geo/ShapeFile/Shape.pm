@@ -2,10 +2,12 @@ package Geo::ShapeFile::Shape;
 use strict;
 use warnings;
 use Carp;
-use Geo::ShapeFile;
-use Geo::ShapeFile::Point;
 use Tree::R;
 use List::Util qw /min max/;
+
+use Geo::ShapeFile;
+use Geo::ShapeFile::Point;
+use Geo::ShapeFile::Shape::Index;
 
 use parent qw /Geo::ShapeFile/;
 
@@ -13,6 +15,7 @@ our $VERSION = '2.55_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
+my $index_class = 'Geo::ShapeFile::Shape::Index';
 
 sub new {
     my $proto = shift;
@@ -620,8 +623,8 @@ sub build_spatial_index {
 
     $n = int $n;
 
-    croak 'Cannot build spatial index with negative number of boxes'
-      if $n <= 0;
+    croak 'Cannot build spatial index with <1 boxes'
+      if $n < 1;
 
     my %sp_indexes;
 
@@ -631,7 +634,6 @@ sub build_spatial_index {
 
     my $part_id = 0;
     foreach my $part (@parts) {
-        my $sp_index = Tree::R->new;
         $part_id ++;  #  parts are indexed base 1
 
         my $segments = $self->get_segments ($part_id);
@@ -643,21 +645,9 @@ sub build_spatial_index {
         else {
             ($x_min, $x_max, $y_min, $y_max) = $self->bounds;  #  faster than searching all points
         }
-        my $y_range = $y_max - $y_min;
-        my $y_tol   = $y_range / 10000;
-        $y_range   += 2 * $y_tol;
-        $y_min     -= $y_tol;  #  make sure everything is inside the boxes - no edge sitters
-        $y_max     += $y_tol;
 
-        #  need a better way of optimising $n
-        my $box_ht  = scalar @$segments < 20 ? $y_range : $y_range / $n;
-
-        my @box_y_vals;
-        my $y = $y_min;
-        foreach my $i (1 .. $n) {
-            push @box_y_vals, [$y, $y + $box_ht];
-            $y += $box_ht;
-        }
+        my $n_boxes = @$segments > 20 ? $n : 1;
+        my $sp_index = $index_class->new ($n_boxes, $x_min, $y_min, $x_max, $y_max);
 
         foreach my $segment (@$segments) {
             my $y0 = $segment->[0]->get_y;
@@ -668,36 +658,9 @@ sub build_spatial_index {
                 ($y0, $y1) = ($y1, $y0);
             }
 
-            #  add the segment to each box it intersects
-            my $in_box = 0;
-          BOX:
-            foreach my $bnd (@box_y_vals) {
-                my $y_min = $bnd->[0];
-                my $y_max = $bnd->[1];
-
-                #  skip if we don't span this box
-                if ($y1 <  $y_min || $y0 >= $y_max) {
-                    last BOX if $in_box;  #  we have moved out
-                    next BOX;             #  or try the next one
-                }
-
-                #  More tweaking would involve getting the
-                #  min and max X across the segments to define each box.
-                #  That would increase the out of bounds results.  
-                my @bbox = ($x_min, $y_min, $x_max, $y_max);
-                $sp_index->insert($segment, @bbox);
-                $in_box++;
-            }
-            #print "$part_id " . scalar @$segments . " $in_box\n";
+            my @bbox = ($x_min, $y_min, $x_max, $y_max);
+            $sp_index->insert($segment, @bbox);
         }
-
-        #  debug checks
-        #my @results = ();
-        #$sp_index->query_completely_within_rect(0, 0, 10**8, 10**8, \@results);
-        #my %ex;
-        #use List::MoreUtils qw /uniq/;
-        #my @uniq = uniq @results;
-        #print scalar @results . ' ' . (scalar @$segments) . ' ' . scalar @uniq . "\n";
 
         $sp_indexes{$part_id} = $sp_index;
     }

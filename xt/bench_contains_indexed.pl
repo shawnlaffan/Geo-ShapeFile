@@ -17,13 +17,14 @@ use Benchmark qw /:all/;
 use FindBin;
 
 
-my $reps     = $ARGV[0] // -5;
-my $prebuild = $ARGV[1] // 1;
+my $reps      = $ARGV[0] // -5;
+my $index_res = $ARGV[1] // 100;
+my $prebuild  = $ARGV[2] // 1;
 
 
 my $dir = "$FindBin::Bin/../t/test_data";
 my $base = "polygon";
-#$base = "states";
+$base = "states";
 my $file = "$dir/$base";
 
 
@@ -80,7 +81,7 @@ foreach my $pt (@points) {
 if ($prebuild) {
     say 'prebuilding shape indexes';
     foreach my $shape ($shp_use_index->get_all_shapes) {
-        $shape->build_spatial_index (50);
+        $shape->build_spatial_index ($index_res);
     }
 }
 
@@ -110,7 +111,7 @@ sub no_index {
 }
 
 sub use_index {
-    my $use_index = 0;
+    my $use_index = $index_res;
 
     foreach my $pt_id (keys %shape_set2) {
         my $pt = $point_hash{$pt_id};
