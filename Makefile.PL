@@ -10,6 +10,8 @@ WriteMakefile(
         'List::Util' => 0,
         'parent'     => 0,
         'Tree::R'    => 0,
+        'autovivification' => 0,
+        'POSIX'      => 0,
     },
     BUILD_REQUIRES => {
         'rlib'       => 0,
