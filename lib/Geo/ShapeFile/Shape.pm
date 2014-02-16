@@ -568,8 +568,7 @@ sub _contains_point_use_index {
     foreach my $part_index (1 .. $num_parts) {
         my $sp_index = $sp_index_hash->{$part_index};
 
-        my @results;
-        $sp_index->query_point($x0, $y0, \@results);
+        my @results = $sp_index->query_point($x0, $y0);
 
         #  skip if not in this part's bounding box
         next PART if !scalar @results;
@@ -577,10 +576,11 @@ sub _contains_point_use_index {
         # segments spanning the index's bounding box
         for my $segment (@results) {
 
-            my $x1 = $segment->[0]->get_x - $x0;
-            my $y1 = $segment->[0]->get_y - $y0;
-            my $x2 = $segment->[1]->get_x - $x0;
-            my $y2 = $segment->[1]->get_y - $y0;
+            #  index stores bare x and y coords to avoid method overhead here
+            my $x1 = $segment->[0][0] - $x0;
+            my $y1 = $segment->[0][1] - $y0;
+            my $x2 = $segment->[1][0] - $x0;
+            my $y2 = $segment->[1][1] - $y0;
 
             #  does the ray intersect the segment?
             if (($y2 >= 0) != ($y1 >= 0)) {
@@ -650,16 +650,24 @@ sub build_spatial_index {
         my $sp_index = $index_class->new ($n_boxes, $x_min, $y_min, $x_max, $y_max);
 
         foreach my $segment (@$segments) {
-            my $y0 = $segment->[0]->get_y;
-            my $y1 = $segment->[1]->get_y;
+            my $p1 = $segment->[0];
+            my $p2 = $segment->[1];
+            my $y0 = $p1->get_y;
+            my $y1 = $p2->get_y;
 
             #  reverse them if needed
             if ($y1 < $y0) {
                 ($y0, $y1) = ($y1, $y0);
             }
 
+            #  bare metal version
+            my $coords = [
+                [$p1->get_x, $p1->get_y],
+                [$p2->get_x, $p2->get_y],
+            ];
+
             my @bbox = ($x_min, $y_min, $x_max, $y_max);
-            $sp_index->insert($segment, @bbox);
+            $sp_index->insert($coords, @bbox);
         }
 
         $sp_indexes{$part_id} = $sp_index;

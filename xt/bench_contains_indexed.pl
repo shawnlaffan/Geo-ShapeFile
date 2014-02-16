@@ -18,14 +18,15 @@ use FindBin;
 
 
 my $reps      = $ARGV[0] // -5;
-my $index_res = $ARGV[1] // 100;
-my $prebuild  = $ARGV[2] // 1;
+my $index_res = $ARGV[1] // 10;
+my $prebuild  = $ARGV[2] // 0;
 
 
 my $dir = "$FindBin::Bin/../t/test_data";
 my $base = "polygon";
-$base = "states";
+#$base = "states";
 my $file = "$dir/$base";
+
 
 
 #  no index per shape - we can still index the shapes themselves
@@ -43,7 +44,7 @@ my $y_min   = $bounds[1];
 my $x_range = $bounds[2] - $x_min;
 my $y_range = $bounds[3] - $y_min;
 
-my $n = 2000;
+my $n = 100;
 
 my (@points, %point_hash);
 
