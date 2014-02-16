@@ -37,7 +37,7 @@ sub _var {
     my $self = shift;
     my $var  = shift;
 
-    if(@_) {
+    if (@_) {
         return $self->{$var} = shift;
     }
     else {
@@ -51,19 +51,19 @@ sub Y { shift()->_var('Y', @_); }
 sub Z { shift()->_var('Z', @_); }
 sub M { shift()->_var('M', @_); }
 
-sub x_min { shift()->_var('X'); }
-sub x_max { shift()->_var('X'); }
-sub y_min { shift()->_var('Y'); }
-sub y_max { shift()->_var('Y'); }
-sub z_min { shift()->_var('Z'); }
-sub z_max { shift()->_var('Z'); }
-sub m_min { shift()->_var('M'); }
-sub m_max { shift()->_var('M'); }
+sub x_min { $_[0]->_var('X'); }
+sub x_max { $_[0]->_var('X'); }
+sub y_min { $_[0]->_var('Y'); }
+sub y_max { $_[0]->_var('Y'); }
+sub z_min { $_[0]->_var('Z'); }
+sub z_max { $_[0]->_var('Z'); }
+sub m_min { $_[0]->_var('M'); }
+sub m_max { $_[0]->_var('M'); }
 
-sub get_x { return shift()->{X} }
-sub get_y { return shift()->{Y} }
-sub get_z { return shift()->{Z} }
-sub get_m { return shift()->{M} }
+sub get_x { $_[0]->{X} }
+sub get_y { $_[0]->{Y} }
+sub get_z { $_[0]->{Z} }
+sub get_m { $_[0]->{M} }
 
 
 sub import {

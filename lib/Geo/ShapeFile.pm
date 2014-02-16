@@ -448,11 +448,14 @@ sub area_contains_point {
 
     my ($x_min, $y_min, $x_max, $y_max) = @_;
 
+    my $x = $point->get_x;
+    my $y = $point->get_y;
+
     my $result =
-        ($point->X >= $x_min) &&
-        ($point->X <= $x_max) &&
-        ($point->Y >= $y_min) &&
-        ($point->Y <= $y_max);
+        ($x >= $x_min) &&
+        ($x <= $x_max) &&
+        ($y >= $y_min) &&
+        ($y <= $y_max);
 
     return $result;
 }
