@@ -296,7 +296,7 @@ Geo::ShapeFile::Point - Geo::ShapeFile utility class.
 
 =head1 ABSTRACT
 
-  This is a utility class, used by L<Geo::ShapeFile>.
+  This is a utility class, used by Geo::ShapeFile.
 
 =head1 DESCRIPTION
 

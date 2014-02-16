@@ -857,7 +857,7 @@ Geo::ShapeFile::Shape - Geo::ShapeFile utility class.
 
 =head1 ABSTRACT
 
-  This is a utility class for L<Geo::ShapeFile> that represents shapes.
+  This is a utility class for Geo::ShapeFile that represents shapes.
 
 =head1 DESCRIPTION
 
