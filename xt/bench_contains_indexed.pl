@@ -16,9 +16,14 @@ use Benchmark qw /:all/;
 
 use FindBin;
 
+
+my $reps     = $ARGV[0] // -5;
+my $prebuild = $ARGV[1] // 1;
+
+
 my $dir = "$FindBin::Bin/../t/test_data";
 my $base = "polygon";
-$base = "states";
+#$base = "states";
 my $file = "$dir/$base";
 
 
@@ -37,7 +42,7 @@ my $y_min   = $bounds[1];
 my $x_range = $bounds[2] - $x_min;
 my $y_range = $bounds[3] - $y_min;
 
-my $n = 20000;
+my $n = 2000;
 
 my (@points, %point_hash);
 
@@ -72,16 +77,18 @@ foreach my $pt (@points) {
 }
 
 #  prebuild the indexes
-say 'prebuilding shape indexes';
-foreach my $shape ($shp_use_index->get_all_shapes) {
-    $shape->build_spatial_index (0);
+if ($prebuild) {
+    say 'prebuilding shape indexes';
+    foreach my $shape ($shp_use_index->get_all_shapes) {
+        $shape->build_spatial_index (50);
+    }
 }
 
-say "Working with ", scalar (keys %shape_set1), " points";
+say 'Working with ', scalar (keys %shape_set1), ' points';
 
 #  now we finally get to the benchmark
 cmpthese (
-    -7,
+    $reps,
     {
         use_index => sub {use_index()},
         no_index  => sub {no_index()},
