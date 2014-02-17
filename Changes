@@ -1,6 +1,10 @@
 Revision history for Geo::ShapeFile.
 
-2.55_001 2014-02-12
+2.56 2014-02-18
+    - Shawn Laffan
+    - CPAN smokers are green for 2.55_001, so bump the version number and release as a full version.
+
+2.55_001 2014-02-17
     - Shawn Laffan
     - Add Geo::ShapeFile::Shape::Index as a simple 2-d block based index.
     - Geo::Shape::ShapeFile now uses a spatial index for the segments.

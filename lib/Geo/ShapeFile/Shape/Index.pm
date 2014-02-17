@@ -5,7 +5,7 @@ use POSIX qw /floor/;
 use Carp;
 use autovivification;
 
-our $VERSION = '2.55_001';
+our $VERSION = '2.56';
 
 #  should also handle X cells
 sub new {

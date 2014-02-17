@@ -1,4 +1,4 @@
-Geo/ShapeFile version 2.54
+Geo/ShapeFile version 2.56
 ==========================
 
 Geo::ShapeFile is a perl library for reading ESRI shape files (such as
@@ -12,6 +12,11 @@ To install this module type the following:
    make
    make test
    make install
+
+Or you can use cpanm if it is installed for your perl (see https://metacpan.org/pod/App::cpanminus if not).
+This will get you the latest released version, not the one on the github repo.  
+
+   cpanm Geo::ShapeFile
 
 
 REPORTING BUGS
