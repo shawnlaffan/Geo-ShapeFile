@@ -326,7 +326,7 @@ will get the default behavior:
 
   use Geo::ShapeFile;
   use Geo::ShapeFile::Point comp_includes_m => 0, comp_includes_z => 0;
-  (Geo::ShapeFile already imported Point for you)
+  (Geo::ShapeFile already imported Point for you, so it has no effect here)
 
 =head1 METHODS
 
@@ -344,7 +344,7 @@ Set/retrieve the X, Y, Z, or M values for this object.
 =item get_x() get_y() get_z() get_m()
 
 Get the X, Y, Z, or M values for this object.  Slightly faster than the
-dual purpose set/retrive methods so good for heavy usage parts of your code.  
+dual purpose set/retrieve methods so good for heavy usage parts of your code.
 
 =item x_min() x_max() y_min() y_max()
 
@@ -356,12 +356,11 @@ for points simply return the X, Y, Z, or M coordinates as appropriate.
 =item distance_from($point)
 
 Returns the distance between this point and the specified point.  Only
-considers the two-dimensional distance, altitude is not included in the
-calculation.
+considers the two-dimensional distance.  Z and M values are ignored.
 
 =item angle_to($point);
 
-Returns the angle (in degress) from this point to some other point.  Returns
+Returns the bearing (in degrees from north) from this point to some other point.  Returns
 0 if the two points are in the same location.
 
 =back
