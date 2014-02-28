@@ -836,7 +836,7 @@ base) formats.
 
 =over 4
 
-=item new($filename_base)
+=item new ($filename_base)
 
 Creates a new shapefile object, the only argument it takes is the basename
 for your data (don't include the extension, the module will automatically
@@ -845,12 +845,12 @@ roads.shp, roads.shx, and roads.dbf, use 'Geo::ShapeFile->new("roads");' to
 create a new object, and the module will load the data it needs from the
 files as it needs it.
 
-=item type_is($numeric_type)
+=item type_is ($numeric_type)
 
 Returns true if the major type of this data file is the same as the type
 passed to type_is().
 
-=item get_dbf_record($record_index)
+=item get_dbf_record ($record_index)
 
 Returns the data from the dbf file associated with the specified record index
 (shapefile indexes start at 1).  If called in a list context, returns a hash,
@@ -883,14 +883,14 @@ in the shp file.  The corners are listed clockwise starting with the upper
 left.
 (upper_left_corner, upper_right_corner, lower_right_corner, lower_left_corner)
 
-=item area_contains_point($point, $x_min, $y_min, $x_max, $y_max)
+=item area_contains_point ($point, $x_min, $y_min, $x_max, $y_max)
 
 Utility function that returns true if the Geo::ShapeFile::Point object in
 point falls within the bounds of the rectangle defined by the area
 indicated.  See bounds_contains_point() if you want to check if a point falls
 within the bounds of the current shp file.
 
-=item bounds_contains_point($point)
+=item bounds_contains_point ($point)
 
 Returns true if the specified point falls within the bounds of the current
 shp file.
@@ -924,9 +924,9 @@ access data that is stored as dbf, but does not have shapes associated with it.
 Returns the shape type of the current shp/shx file (see shape_type()), but
 as the human-readable string type, rather than an integer.
 
-=item get_shx_record($record_index)
+=item get_shx_record ($record_index)
 
-=item get_shx_record_header($record_index)
+=item get_shx_record_header ($record_index)
 
 Get the contents of an shx record or record header (for compatibility with
 the other get_* functions, both are provided, but in the case of shx data,
@@ -934,22 +934,22 @@ they return the same information).  The return value is a two element array
 consisting of the offset in the shp file where the indicated record begins,
 and the content length of that record.
 
-=item get_shp_record_header($record_index)
+=item get_shp_record_header ($record_index)
 
 Retrieve an shp record header for the specified index.  Returns a two element
 array consisting of the record number and the content length of the record.
 
-=item get_shp_record($record_index)
+=item get_shp_record ($record_index)
 
 Retrieve an shp record for the specified index.  Returns a
 Geo::ShapeFile::Shape object.
 
-=item shapes_in_area($x_min, $y_min, $x_max, $y_max)
+=item shapes_in_area ($x_min, $y_min, $x_max, $y_max)
 
 Returns an array of integers listing which shape IDs have
 bounding boxes that overlap with the area specified.
 
-=item check_in_area($x1_min, $y1_min, $x1_max, $y1_max, $x2_min, $x2_max, $y2_min, $y2_max)
+=item check_in_area ($x1_min, $y1_min, $x1_max, $y1_max, $x2_min, $x2_max, $y2_min, $y2_max)
 
 Returns true if the two specified areas overlap.
 
@@ -962,11 +962,11 @@ Returns the bounds for the current shp file.
 
 Returns the file handles associated with the respective data files.
 
-=item type($shape_type_number)
+=item type ($shape_type_number)
 
 Returns the name of the type associated with the given type id number.
 
-=item find_bounds(@shapes)
+=item find_bounds (@shapes)
 
 Takes an array of Geo::ShapeFile::Shape objects, and returns a hash, with
 keys of x_min, y_min, x_max, y_max, with the values for each of those bounds.
@@ -982,14 +982,16 @@ Returns an array (or arrayref in scalar context) with all shape objects in the
 shapefile.
 
 =item get_shapes_sorted()
-=item get_shapes_sorted(\@shapes, \@sort_sub)
+
+=item get_shapes_sorted (\@shapes, \@sort_sub)
 
 Returns an array (or arrayref in scalar context) of shape objects sorted by ID.
 Defaults to all shapes, but will also take an array of Geo::ShapeFile::Shape objects.
 Sorts by record number by default, but you can pass your own sub for more fancy work.
 
 =item get_shapes_sorted_spatially()
-=item get_shapes_sorted_spatially(\@shapes, \@sort_sub)
+
+=item get_shapes_sorted_spatially (\@shapes, \@sort_sub)
 
 Convenience wrapper around get_shapes_sorted to sort spatially (south-west to north-east)
 then by record number.  You can pass your own shapes and sort sub.
@@ -998,10 +1000,12 @@ but it is your code so do what you like.
 
 
 =item build_spatial_index()
+
 Builds a spatial index (a L<Tree::R> object) and returns it.  This will be used internally for
 many of the routines, but you can use it directly if useful.
 
 =item get_spatial_index()
+
 Returns the spatial index object, or C<undef> if one has not been built.
 
 =back

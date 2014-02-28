@@ -332,9 +332,9 @@ will get the default behavior:
 
 =over 4
 
-=item new(X => $x, Y => $y)
+=item new (X => $x, Y => $y)
 
-Creates a new Geo::ShapeFile::Point object, takes a has consisting of X, Y, Z,
+Creates a new Geo::ShapeFile::Point object, takes a hash consisting of X, Y, Z,
 and/or M values to be assigned to the point.
 
 =item X() Y() Z() M()
