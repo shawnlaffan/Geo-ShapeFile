@@ -640,10 +640,10 @@ sub build_spatial_index {
 
         if (@parts > 1) {
             my %bounds = $self->_get_part_bounds ($part_id);
-            ($x_min, $x_max, $y_min, $y_max) = @bounds{qw /x_min x_max y_min y_max/};
+            ($x_min, $y_min, $x_max, $y_max) = @bounds{qw /x_min y_min x_max y_max/};
         }
         else {
-            ($x_min, $x_max, $y_min, $y_max) = $self->bounds;  #  faster than searching all points
+            ($x_min, $y_min, $x_max, $y_max) = $self->bounds;  #  faster than searching all points
         }
 
         my $n_boxes = @$segments > 20 ? $n : 1;

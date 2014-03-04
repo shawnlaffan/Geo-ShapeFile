@@ -44,6 +44,8 @@ sub main {
     test_spatial_index();
     test_angle_to();
 
+    test_shape_indexing();
+
     done_testing;
     return 0;
 }
@@ -423,32 +425,40 @@ sub test_points_in_polygon {
     #  shape 23 is sonora
     my $test_poly = $shp->get_shp_record(23);
 
-    foreach my $coord (@in_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok ($result, "$point is in $filename polygon 23");
-    }
+    subtest "$filename polygon 23 (not indexed) contains points" => sub {
+        foreach my $coord (@in_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok ($result, "$point is in $filename polygon 23");
+        }
+    };
 
-    foreach my $coord (@out_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok (!$result, "$point is not in $filename polygon 23");
-    }
+    subtest "$filename polygon 23 (not indexed) does not contain points" => sub {
+        foreach my $coord (@out_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok (!$result, "$point is not in $filename polygon 23");
+        }
+    };
 
     #  use the spatial index
     $test_poly->build_spatial_index;
 
-    foreach my $coord (@in_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point, 0);
-        ok ($result, "$point is in $filename polygon 23 (indexed)");
-    }
+    subtest "$filename polygon 23 (indexed) contains points" => sub {
+        foreach my $coord (@in_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point, 0);
+            ok ($result, "$point is in $filename polygon 23 (indexed)");
+        }
+    };
 
-    foreach my $coord (@out_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok (!$result, "$point is not in $filename polygon 23 (indexed)");
-    }
+    subtest "$filename polygon 23 (indexed) does not contain points" => sub {
+        foreach my $coord (@out_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok (!$result, "$point is not in $filename polygon 23 (indexed)");
+        }
+    };
 
     #  now try with a shapefile with holes in the polys
     $filename = 'polygon.shp';
@@ -472,31 +482,39 @@ sub test_points_in_polygon {
         [477499, 4762436],  # outside bounds
     );
 
-    foreach my $coord (@in_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok ($result, "$point is in $filename polygon 83");
-    }
+    subtest "$filename polygon 83 (not indexed) contains points" => sub { 
+        foreach my $coord (@in_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok ($result, "$point is in $filename polygon 83");
+        }
+    };
 
-    foreach my $coord (@out_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok (!$result, "$point is not in $filename polygon 83");
-    }
+    subtest "$filename polygon 83 (not indexed) does not contain points" => sub { 
+        foreach my $coord (@out_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok (!$result, "$point is not in $filename polygon 83");
+        }
+    };
 
     #  Now with the spatial index.
     $test_poly->build_spatial_index;
 
-    foreach my $coord (@in_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point, 0);
-        ok ($result, "$point is in $filename polygon 83 (indexed)");
-    }
-    foreach my $coord (@out_coords) {
-        my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
-        my $result = $test_poly->contains_point ($point);
-        ok (!$result, "$point is not in $filename polygon 83 (indexed)");
-    }
+    subtest "$filename polygon 83 (indexed) contains points" => sub {
+        foreach my $coord (@in_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point, 0);
+            ok ($result, "$point is in $filename polygon 83 (indexed)");
+        }
+    };
+    subtest "$filename polygon 83 (indexed) does not contain points" => sub {
+        foreach my $coord (@out_coords) {
+            my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+            my $result = $test_poly->contains_point ($point);
+            ok (!$result, "$point is not in $filename polygon 83 (indexed)");
+        }
+    };
 
     return;
 }
@@ -560,5 +578,35 @@ sub test_spatial_index {
         );
     }       
     
+}
+
+sub test_shape_indexing {
+    my $poly_file = "$dir/poly_to_check_index";
+    
+    my $shp = Geo::ShapeFile->new ($poly_file);
+
+    my @in_coords = (
+        [-1504329.017, -3384142.590],
+        [ -811568.465, -3667544.634],
+        [-1417733.948, -3793501.098],
+    );
+
+    foreach my $size (5, 10, 15, 20, 100) {
+        foreach my $shape ($shp->get_all_shapes) {
+            my %part_indexes = $shape->build_spatial_index ($size);
+            foreach my $part (values %part_indexes) {
+                my $containers = $part->{containers};
+                ok (scalar keys %$containers == $size, "index generated $size containers")
+            }
+            subtest "polygon contains points when using index of size $size" => sub { 
+                foreach my $coord (@in_coords) {
+                    my $point  = Geo::ShapeFile::Point->new(X => $coord->[0], Y => $coord->[1]);
+                    my $result = $shape->contains_point ($point);
+                    ok ($result, "$point is in polygon");
+                }
+            }
+        }
+    }
+
 }
 
