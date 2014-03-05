@@ -34,6 +34,8 @@ sub main {
         return 0;
     }
 
+    test_open_croaks();
+
     test_corners();
     test_shapes_in_area();
     #test_end_point_slope();
@@ -53,6 +55,20 @@ sub main {
 
 
 ###########################################
+
+
+sub test_open_croaks {
+    my $filename = "blurfleblargfail";
+    
+    my $shp = eval {
+        Geo::ShapeFile->new ($filename);
+    };
+    my $e = $@;
+    ok ($e, 'threw an exception on invalid file');
+    
+}
+
+
 
 sub test_shapepoint {
     my @test_points = (
@@ -293,7 +309,7 @@ sub test_files {
 
 sub test_empty_dbf {
     my $empty_dbf = Geo::ShapeFile::TestHelpers::get_empty_dbf();
-    my $obj = Geo::ShapeFile->new($empty_dbf);
+    my $obj = Geo::ShapeFile->new("$dir/$empty_dbf");
     my $records = $obj->records;
     is ($records, 0, 'empty dbf file has zero records');
 }
@@ -607,6 +623,5 @@ sub test_shape_indexing {
             }
         }
     }
-
 }
 
