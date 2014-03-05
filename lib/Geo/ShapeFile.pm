@@ -65,6 +65,13 @@ sub new {
         $self->{has_dbf} = 1;
     }
 
+    if (!$self->{has_dbf}) {
+        croak "$self->{filebase}: shp and/or shx file do not exist or are invalid"
+          if !($self->{has_shp} && $self->{has_shx});
+
+        croak "$self->{filebase}.dbf does not exist or is invalid";
+    }
+
     return $self;
 }
 
