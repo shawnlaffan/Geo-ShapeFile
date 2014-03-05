@@ -10,7 +10,7 @@ use List::Util qw /min max/;
 use Tree::R;
 
 
-our $VERSION = '2.56';
+our $VERSION = '2.57_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -63,13 +63,6 @@ sub new {
     if (-f $self->{filebase} . '.dbf') {
         $self->_read_dbf_header();
         $self->{has_dbf} = 1;
-    }
-
-    if (!$self->{has_dbf}) {
-        croak "$self->{filebase}: shp and/or shx file do not exist or are invalid"
-          if !($self->{has_shp} && $self->{has_shx});
-
-        croak "$self->{filebase}.dbf does not exist or is invalid";
     }
 
     return $self;

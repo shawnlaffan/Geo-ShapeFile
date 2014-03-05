@@ -1,5 +1,13 @@
 Revision history for Geo::ShapeFile.
 
+2.57_001 2014-03-05
+    - Fix incorrect passing of arguments in the shape index.
+      This should not affect most existing code as the indexing
+      is only used when called explicitly.
+      https://github.com/shawnlaffan/Geo-ShapeFile/issues/14
+    - Croak when an invalid file name is passed.
+      https://github.com/shawnlaffan/Geo-ShapeFile/issues/13
+
 2.56 2014-02-18
     - Shawn Laffan
     - CPAN smokers are green for 2.55_001, so bump the version number and release as a full version.
