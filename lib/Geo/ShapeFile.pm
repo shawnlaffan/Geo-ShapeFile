@@ -10,7 +10,7 @@ use List::Util qw /min max/;
 use Tree::R;
 
 
-our $VERSION = '2.57_001';
+our $VERSION = '2.58';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
