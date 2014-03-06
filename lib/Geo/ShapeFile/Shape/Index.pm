@@ -1,5 +1,5 @@
 package Geo::ShapeFile::Shape::Index;
-use 5.010;
+#use 5.010;  #  not yet
 use strict;
 use warnings;
 use POSIX qw /floor/;
