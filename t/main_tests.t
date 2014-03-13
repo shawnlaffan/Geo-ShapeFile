@@ -56,6 +56,20 @@ sub main {
 
 ###########################################
 
+sub test_dbf_header {
+    my %data = Geo::ShapeFile::TestHelpers::get_data();
+
+    foreach my $base (sort keys %data) {
+
+        my $shp = Geo::ShapeFile->new ("$dir/$base");
+
+        my $hdr = $shp->get_dbf_field_info;
+    
+        #  not the world's best test, but it ensures the returned copy is corrct
+        is_deeply ($hdr, $shp->{dbf_field_info}, "header for $base has correct structure");
+    }
+}
+
 
 sub test_open_croaks {
     my $filename = "blurfleblargfail";

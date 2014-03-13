@@ -11,7 +11,7 @@ use Geo::ShapeFile::Shape::Index;
 
 use parent qw /Geo::ShapeFile/;
 
-our $VERSION = '2.58';
+our $VERSION = '2.59_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -949,15 +949,18 @@ shape winding the wrong way.  Polygon shapes should be anticlockwise for outer b
 and clockwise for inner void polygons.
 
 =item build_spatial_index ($index_res)
+
 Builds a spatial index for use in contains_point().
 $index_res is a positive integer which sets the nnumber of along the y-axis.
 A value of 0 lets the system determine the number.
 
 =item get_spatial_index()
+
 Gets the spatial index.  This is a hash indexed by part number.
 Returns a hash reference in scalar context.
 
 =item bounds
+
 Returns the object's bounds as an array (x_min, y_min, x_max, y_max).
 Returns an array ref in scalar context.
 

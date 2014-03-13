@@ -10,7 +10,7 @@ use List::Util qw /min max/;
 use Tree::R;
 
 
-our $VERSION = '2.58';
+our $VERSION = '2.59_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -340,6 +340,24 @@ sub _generate_dbf_header {
     ;
 }
 
+sub get_dbf_field_info {
+    my $self = shift;
+    
+    my $header = $self->{dbf_field_info};
+    
+    return if !$header;
+    
+    #  Return a deep copy to avoid callers
+    #  messing up the internals
+    my @hdr;
+    foreach my $field (@$header) {
+        my %h = %$field;
+        push @hdr, \%h;
+    }
+
+    return wantarray ? @hdr : \@hdr;
+}
+
 sub get_dbf_record {
     my $self  = shift;
     my $entry = shift;
@@ -358,7 +376,7 @@ sub get_dbf_record {
 
         map { s/^\s*//; s/\s*$//; } @data;
 
-        my %record = ();
+        my %record;
         @record{@{$self->{dbf_field_names}}} = @data;
         $record{_deleted} = (ord $del == 0x2A);
         $dbf = {%record};
@@ -990,7 +1008,7 @@ shapefile.
 
 =item get_shapes_sorted()
 
-=item get_shapes_sorted (\@shapes, \@sort_sub)
+=item get_shapes_sorted (\@shapes, \&sort_sub)
 
 Returns an array (or arrayref in scalar context) of shape objects sorted by ID.
 Defaults to all shapes, but will also take an array of Geo::ShapeFile::Shape objects.
@@ -998,7 +1016,7 @@ Sorts by record number by default, but you can pass your own sub for more fancy 
 
 =item get_shapes_sorted_spatially()
 
-=item get_shapes_sorted_spatially (\@shapes, \@sort_sub)
+=item get_shapes_sorted_spatially (\@shapes, \&sort_sub)
 
 Convenience wrapper around get_shapes_sorted to sort spatially (south-west to north-east)
 then by record number.  You can pass your own shapes and sort sub.
@@ -1014,6 +1032,12 @@ many of the routines, but you can use it directly if useful.
 =item get_spatial_index()
 
 Returns the spatial index object, or C<undef> if one has not been built.
+
+=item get_dbf_field_info()
+
+Returns an array of hashes containing information about the fields.
+Useful if you are modifying the shapes and then writing them out to a
+new shapefile using L<Geo::Shapefile::Writer>.
 
 =back
 

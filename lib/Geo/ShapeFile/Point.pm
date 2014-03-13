@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Math::Trig;
 use Carp;
-our $VERSION = '2.58';
+our $VERSION = '2.59_001';
 
 use overload
     '==' => 'eq',
@@ -14,7 +14,7 @@ use overload
     '-'  => \&subtract,
     '*'  => \&multiply,
     '/'  => \&divide,
-    fallback => 1
+    fallback => 1,
 ;
 
 my %config = (
