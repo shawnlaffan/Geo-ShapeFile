@@ -1,5 +1,10 @@
 Revision history for Geo::ShapeFile.
 
+2.60 2014-03-14
+    - Add method to obtain the dbf header information.
+      https://github.com/shawnlaffan/Geo-ShapeFile/issues/15
+    - Clean up some POD formatting issues.  
+
 2.58 2014-03-06
     - CPAN testers are green for 2.57_001 so make a production release.
     - Fix incorrect passing of arguments in the shape index.
