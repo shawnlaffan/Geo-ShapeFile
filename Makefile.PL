@@ -10,8 +10,8 @@ WriteMakefile(
         'List::Util' => 0,
         'parent'     => 0,
         'Tree::R'    => 0,
-        'autovivification' => 0,
         'POSIX'      => 0,
+        'autovivification' => 0,
     },
     BUILD_REQUIRES => {
         'rlib'       => 0,
@@ -21,8 +21,9 @@ WriteMakefile(
         resources => {
             repository => {
                 type => 'git',
-                url => 'https://github.com/shawnlaffan/Geo-ShapeFile.git',
-                web => 'https://github.com/shawnlaffan/Geo-ShapeFile',
+                url  => 'https://github.com/shawnlaffan/Geo-ShapeFile.git',
+                web  => 'https://github.com/shawnlaffan/Geo-ShapeFile',
+                bugtracker  => 'https://github.com/shawnlaffan/Geo-ShapeFile/issues/',
             },
         },
     },
