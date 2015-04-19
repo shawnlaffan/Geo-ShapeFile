@@ -23,8 +23,11 @@ WriteMakefile(
                 type => 'git',
                 url  => 'https://github.com/shawnlaffan/Geo-ShapeFile.git',
                 web  => 'https://github.com/shawnlaffan/Geo-ShapeFile',
-                bugtracker  => 'https://github.com/shawnlaffan/Geo-ShapeFile/issues/',
             },
+            bugtracker => {
+                web => 'https://github.com/shawnlaffan/Geo-ShapeFile/issues/',
+            },
+
         },
     },
     ABSTRACT_FROM => 'lib/Geo/ShapeFile.pm',
