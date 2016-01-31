@@ -11,7 +11,7 @@ use Geo::ShapeFile::Shape::Index;
 
 use parent qw /Geo::ShapeFile/;
 
-our $VERSION = '2.60';
+our $VERSION = '2.61';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -530,8 +530,8 @@ sub contains_point {
             my $y2 = $p2->get_y - $y0;
 
             #  does the ray intersect the segment?
-            if (($y2 >= 0) != ($y1 >= 0)) {
-                my $isl = $x1 * $y2 - $y1 * $x2;
+            if (($y2 >= 0) != ($y1 >= 0)) {  #  $y0 is between $y1 and $y2
+                my $isl = $x1 * $y2 - $y1 * $x2;  #  is left of $p2
                 if ( $y2 > $y1 ) {
                     if ($isl > 0) {
                         $a--;

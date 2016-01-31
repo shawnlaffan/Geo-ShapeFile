@@ -2,9 +2,9 @@ package Geo::ShapeFile::Point;
 # TODO - add dimension operators (to specify if 2 or 3 dimensional point)
 use strict;
 use warnings;
-use Math::Trig;
+use Math::Trig 1.04;
 use Carp;
-our $VERSION = '2.60';
+our $VERSION = '2.61';
 
 use overload
     '==' => 'eq',

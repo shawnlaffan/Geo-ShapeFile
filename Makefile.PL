@@ -6,7 +6,7 @@ WriteMakefile(
     'PREREQ_PM'	    => {
         'Carp'       => 0,
         'IO::File'   => 0,
-        'Math::Trig' => 0,
+        'Math::Trig' => 1.04,
         'List::Util' => 0,
         'parent'     => 0,
         'Tree::R'    => 0,

@@ -1,5 +1,9 @@
 Revision history for Geo::ShapeFile.
 
+2.61 2016-01-31
+    - Specify minimum Math::Trig version to avoid some cpantesters
+      fails on pre5.8.9 perls on Cygwin.  
+
 2.60 2014-03-14
     - Add method to obtain the dbf header information.
       https://github.com/shawnlaffan/Geo-ShapeFile/issues/15
