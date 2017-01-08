@@ -16,6 +16,9 @@ WriteMakefile(
     BUILD_REQUIRES => {
         'rlib'       => 0,
     },
+    TEST_REQUIRES => {
+        'rlib'       => 0,
+    }
     META_MERGE => {
         'meta-spec' => { version => 2 },
         resources => {

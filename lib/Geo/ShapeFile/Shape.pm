@@ -11,7 +11,7 @@ use Geo::ShapeFile::Shape::Index;
 
 use parent qw /Geo::ShapeFile/;
 
-our $VERSION = '2.61';
+our $VERSION = '2.62';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 

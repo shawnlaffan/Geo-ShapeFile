@@ -1,5 +1,9 @@
 Revision history for Geo::ShapeFile.
 
+2.62 2017-01-08
+    - Add rlib to TEST_REQUIRES in Makefile.PL to avoid some
+      cygwin test failures
+
 2.61 2016-01-31
     - Specify minimum Math::Trig version to avoid some cpantesters
       fails on pre5.8.9 perls on Cygwin.  
@@ -50,7 +54,7 @@ Revision history for Geo::ShapeFile.
         - https://rt.cpan.org/Ticket/Display.html?id=46698
           Clarify docs such that point objects are passed to has_point, not coordinates.
         - https://rt.cpan.org/Ticket/Display.html?id=46068
-          Values returned from width and height were swapped.  Thanks to Le Goddard for reporting.
+          Values returned from width and height were swapped.  Thanks to Lee Goddard for reporting.
         - https://rt.cpan.org/Ticket/Display.html?id=49054
           $@ should have been @_ (thanks to rgsave@hotmail.com for reporting)
         - https://rt.cpan.org/Ticket/Display.html?id=92790
