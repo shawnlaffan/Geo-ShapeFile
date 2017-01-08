@@ -3,6 +3,7 @@
 t/.*\.html
 
 xt/mem_leak_tests
+xt/.perlcritic-history
 
 Makefile.old
 MANIFEST.bak
@@ -20,3 +21,6 @@ pod2htmd.tmp$
 x\.tmp
 
 pm_to_blib
+
+appveyor.yml
+.travis.yml

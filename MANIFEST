@@ -84,7 +84,6 @@ t/test_data/test_shapes_in_area.dbf
 t/test_data/test_shapes_in_area.prj
 t/test_data/test_shapes_in_area.shp
 t/test_data/test_shapes_in_area.shx
-xt/.perlcritic-history
 xt/01-has_versions.t
 xt/02-versions_all_same.t
 xt/03-has_pod.t
