@@ -652,13 +652,6 @@ sub build_spatial_index {
         foreach my $segment (@$segments) {
             my $p1 = $segment->[0];
             my $p2 = $segment->[1];
-            my $y0 = $p1->get_y;
-            my $y1 = $p2->get_y;
-
-            #  reverse them if needed
-            if ($y1 < $y0) {
-                ($y0, $y1) = ($y1, $y0);
-            }
 
             #  bare metal version
             my $coords = [
