@@ -734,6 +734,9 @@ sub _get_handle {
         croak "Couldn't get file handle for $file: $!"
           if not $self->{$han}->open($file, O_RDONLY | O_BINARY);
         binmode $self->{$han}; # fix windows bug reported by Patrick Dughi
+        #  Maybe should handle explicitly in a destroy sub 
+        use Scalar::Util qw/weaken/;
+        weaken $self->{han};
     }
 
     return $self->{$han};
