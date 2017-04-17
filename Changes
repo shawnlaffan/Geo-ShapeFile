@@ -1,5 +1,8 @@
 Revision history for Geo::ShapeFile.
 
+2.63_001 2017-04-17
+    - Add no_cache option to new method
+
 2.62 2017-01-08
     - Add rlib to TEST_REQUIRES in Makefile.PL to avoid some
       cygwin test failures

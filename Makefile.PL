@@ -8,6 +8,7 @@ WriteMakefile(
         'IO::File'   => 0,
         'Math::Trig' => 1.04,
         'List::Util' => 0,
+        'Scalar::Util' => 0,
         'parent'     => 0,
         'Tree::R'    => 0,
         'POSIX'      => 0,
