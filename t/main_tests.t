@@ -182,7 +182,7 @@ sub test_files_no_caching {
 }
 
 sub test_files {
-    my $disable_cache = shift;
+    my $no_cache = shift;
     
     my %data = Geo::ShapeFile::TestHelpers::get_data();
 
@@ -190,13 +190,14 @@ sub test_files {
         foreach my $ext (qw/dbf shp shx/) {
             ok(-f "$dir/$base.$ext", "$ext file exists for $base");
         }
-        my $obj = $data{$base}->{object} = Geo::ShapeFile->new("$dir/$base");
+        my $fname = "$dir/$base.shp";
+        my $obj = $data{$base}->{object}
+                = Geo::ShapeFile->new("$dir/$base", {no_cache => $no_cache});
         
-        if ($disable_cache) {
-            $obj->disable_all_caching;
-        }
-        
-        my @expected_fld_names = grep {$_ ne '_deleted'} split /\s+/, $data{$base}{dbf_labels};
+        my @expected_fld_names
+          = grep
+            {$_ ne '_deleted'}
+            split /\s+/, $data{$base}{dbf_labels};
         my @got_fld_names = $obj->get_dbf_field_names;
 
         is_deeply (
@@ -324,7 +325,22 @@ sub test_files {
                 );
             }
         };
-
+        
+        if ($obj->shapes) {
+            #  a bit lazy, as we check for any caching, not specific caching
+            my $expect_cache = !$no_cache;
+            #  tests should not know about internals
+            my $object_cache = $obj->{_object_cache};
+            my $cache_count = 0;
+            foreach my $type (keys %$object_cache) {
+                $cache_count += scalar keys %{$object_cache->{$type}};
+            }
+            my $nc_msg = defined $no_cache ? 'on' : 'off';
+            is (!!$cache_count,
+                $expect_cache,
+                "$fname: Got expected caching for no_cache flag: $nc_msg",
+            );
+        }
     }
 
     return;

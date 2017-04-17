@@ -16,12 +16,16 @@ my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
 # Preloaded methods go here.
 sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
+    my $proto    = shift;
+    my $filebase = shift || croak "Must specify filename!";
+    my $args     = shift || {};  #  should check it's a haashref
 
+    my $class = ref($proto) || $proto;
     my $self = {};
 
-    $self->{filebase} = shift || croak "Must specify filename!";
+    $self->{filebase} = $filebase;
+    #  should use a proper file name handler
+    #  so we can deal with fred.ext referring to fred.ext.shp
     $self->{filebase} =~ s/\.\w{3}$//;
 
     $self->{_enable_caching} = {
@@ -36,6 +40,12 @@ sub new {
 
     bless $self, $class;
 
+    #  control overall caching
+    if ($args->{no_cache}) {
+        $self->{_no_cache} = 1;
+    }
+
+    #  not sure what this does - possible residual from early plans
     $self->{_change_cache} = {
         shape_type => undef,
         records    => undef,
@@ -99,6 +109,8 @@ sub caching {
 
 sub cache {
     my ($self, $type, $obj, $cache) = @_;
+    
+    return if $self->{_no_cache};
 
     return $self->{_change_cache}->{$type}->{$obj}
       if $self->{_change_cache}->{$type} && $self->{_change_cache}->{$type}->{$obj};
