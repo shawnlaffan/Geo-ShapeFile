@@ -94,5 +94,6 @@ xt/06-critic.t
 xt/07-notabs.t
 xt/09-use_strict.t
 xt/10-changes_format.t
+xt/20-leakers.pl
 xt/bench_contains_indexed.pl
 xt/README.txt
