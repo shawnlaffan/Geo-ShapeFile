@@ -864,6 +864,7 @@ Geo::ShapeFile - Perl extension for handling ESRI GIS Shapefiles.
 
   my $shapefile = Geo::ShapeFile->new('roads');
 
+  #  note that IDs are 1-based
   foreach my $id (1 .. $shapefile->shapes()) {
     my $shape = $shapefile->get_shp_record($id);
     # see Geo::ShapeFile::Shape docs for what to do with $shape
@@ -894,6 +895,7 @@ base) formats.
 =over 4
 
 =item new ($filename_base)
+
 =item new ($filename_base, {no_cache => 1})
 
 Creates a new shapefile object.  The first argument is the basename
