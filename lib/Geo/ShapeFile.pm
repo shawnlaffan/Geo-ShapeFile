@@ -7,10 +7,11 @@ use IO::File;
 use Geo::ShapeFile::Shape;
 use Config;
 use List::Util qw /min max/;
+use Scalar::Util qw/weaken/;
 use Tree::R;
 
 
-our $VERSION = '2.63';
+our $VERSION = '2.63_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -758,7 +759,6 @@ sub _get_handle {
           if not $self->{$han}->open($file, O_RDONLY | O_BINARY);
         binmode $self->{$han}; # fix windows bug reported by Patrick Dughi
         #  Maybe should handle explicitly in a destroy sub 
-        use Scalar::Util qw/weaken/;
         weaken $self->{han};
     }
 
