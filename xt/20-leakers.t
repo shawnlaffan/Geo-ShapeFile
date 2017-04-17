@@ -16,7 +16,12 @@ my $fname = 't/test_data/lakes.shp';
 
 sub process_file {
 
-    my $shapefile = Geo::ShapeFile->new ($fname); 
+    my $shapefile = Geo::ShapeFile->new ($fname);
+    #$shapefile->caching('shp', 0);
+    #$shapefile->caching('shx', 0);
+    #$shapefile->caching('dbf', 0);
+    $shapefile->disable_all_caching;
+
     my $n_features = $shapefile->shapes();
     for my $id (1 .. $n_features) {
         my %attr = $shapefile->get_dbf_record($id);
@@ -36,4 +41,5 @@ sub process_file {
             #}
         }
     }
+    my $x;  #  breakpoint hook
 }

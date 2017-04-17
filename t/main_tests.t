@@ -35,12 +35,12 @@ sub main {
     }
 
     test_open_croaks();
-
     test_corners();
     test_shapes_in_area();
     #test_end_point_slope();
     test_shapepoint();
     test_files();
+    test_files_no_caching();
     test_empty_dbf();
     test_points_in_polygon();
     test_spatial_index();
@@ -177,7 +177,13 @@ sub test_end_point_slope {
 }
 
 
+sub test_files_no_caching {
+    test_files ('no_cache');
+}
+
 sub test_files {
+    my $disable_cache = shift;
+    
     my %data = Geo::ShapeFile::TestHelpers::get_data();
 
     foreach my $base (sort keys %data) {
@@ -185,7 +191,11 @@ sub test_files {
             ok(-f "$dir/$base.$ext", "$ext file exists for $base");
         }
         my $obj = $data{$base}->{object} = Geo::ShapeFile->new("$dir/$base");
-
+        
+        if ($disable_cache) {
+            $obj->disable_all_caching;
+        }
+        
         my @expected_fld_names = grep {$_ ne '_deleted'} split /\s+/, $data{$base}{dbf_labels};
         my @got_fld_names = $obj->get_dbf_field_names;
 

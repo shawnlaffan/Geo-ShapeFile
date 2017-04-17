@@ -75,6 +75,17 @@ sub new {
     return $self;
 }
 
+sub disable_all_caching {
+    my $self = shift;
+    #  a bit nuclear...
+    foreach my $type (qw/shp shx dbf shapes_in_area/) {
+        $self->{_enable_caching}{$type} = 0;
+        $self->{_object_cache} = {};
+        #$self->{_change_cache} = {};  #  need to work out what this is for
+    }
+    return;
+}
+
 sub caching {
     my $self = shift;
     my $what = shift;
