@@ -85,7 +85,7 @@ sub new {
     return $self;
 }
 
-sub disable_all_caching {
+sub _disable_all_caching {
     my $self = shift;
     #  a bit nuclear...
     foreach my $type (qw/shp shx dbf shapes_in_area/) {
@@ -864,12 +864,18 @@ Geo::ShapeFile - Perl extension for handling ESRI GIS Shapefiles.
 
   my $shapefile = Geo::ShapeFile->new('roads');
 
-  for(1 .. $shapefile->shapes()) {
-    my $shape = $shapefile->get_shp_record($_);
+  foreach my $id (1 .. $shapefile->shapes()) {
+    my $shape = $shapefile->get_shp_record($id);
     # see Geo::ShapeFile::Shape docs for what to do with $shape
 
-    my %db = $shapefile->get_dbf_record($_);
+    my %db = $shapefile->get_dbf_record($id);
   }
+  
+  #  As before, but do not cache any data.
+  #  Useful if you have large files and only need to access
+  #  each shape once or a small nmber of times.
+  my $shapefile = Geo::ShapeFile->new('roads', {no_cache => 1});
+
 
 =head1 ABSTRACT
 
@@ -888,13 +894,20 @@ base) formats.
 =over 4
 
 =item new ($filename_base)
+=item new ($filename_base, {no_cache => 1})
 
-Creates a new shapefile object, the only argument it takes is the basename
-for your data (don't include the extension, the module will automatically
+Creates a new shapefile object.  The first argument is the basename
+for your data (there is no need to include the extension, the module will automatically
 find the extensions it supports).  For example if you have data files called
 roads.shp, roads.shx, and roads.dbf, use 'Geo::ShapeFile->new("roads");' to
 create a new object, and the module will load the data it needs from the
 files as it needs it.
+
+The second (optional) argument is a hashref.
+Currently only no_cache is supported.
+If specified then data will not be cached in memory and the system will
+read from disk each time you access a shape.
+It will save memory for large files, though.
 
 =item type_is ($numeric_type)
 
