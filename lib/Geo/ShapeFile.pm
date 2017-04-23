@@ -11,7 +11,7 @@ use Scalar::Util qw/weaken/;
 use Tree::R;
 
 
-our $VERSION = '2.63_001';
+our $VERSION = '2.64';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
@@ -901,7 +901,7 @@ base) formats.
 Creates a new shapefile object.  The first argument is the basename
 for your data (there is no need to include the extension, the module will automatically
 find the extensions it supports).  For example if you have data files called
-roads.shp, roads.shx, and roads.dbf, use 'Geo::ShapeFile->new("roads");' to
+roads.shp, roads.shx, and roads.dbf, use C<< Geo::ShapeFile->new("roads"); >> to
 create a new object, and the module will load the data it needs from the
 files as it needs it.
 
@@ -933,7 +933,7 @@ in the shp file header.
 
 =item lower_left_corner() lower_right_corner()
 
-Returns a Geo::ShapeFile::Point object indicating the respective corners.
+Returns a L<Geo::ShapeFile::Point> object indicating the respective corners.
 
 =item height() width()
 
@@ -977,7 +977,7 @@ value.
 
 Returns the number of shapes contained in the current shp/shx file.  This is
 the value that allows you to iterate through all the shapes using
-'for(1 .. $obj->shapes()) {'.
+C<< for(1 .. $obj->shapes()) { >>.
 
 =item records()
 

@@ -1,7 +1,12 @@
 Revision history for Geo::ShapeFile.
 
+2.64 2017-04-23
+    - Update some POD
+    - No functional changes from 2.63_001 dev release
+
 2.63_001 2017-04-17
-    - Add no_cache option to new method
+    - Add no_cache option to new method following
+      discussion at http://www.perlmonks.org/?node_id=1188065
 
 2.62 2017-01-08
     - Add rlib to TEST_REQUIRES in Makefile.PL to avoid some
