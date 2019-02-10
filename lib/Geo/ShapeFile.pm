@@ -423,11 +423,13 @@ sub _get_shp_shx_header_value {
     my $self = shift;
     my $val  = shift;
 
-    if (!($self->{'shx_' . $val} || $self->{'shp_' . $val})) {
+    if (!defined ($self->{'shx_' . $val} || $self->{'shp_' . $val})) {
         $self->_read_shx_header();
     }
 
-    return $self->{'shx_' . $val} || $self->{'shp_' . $val} || undef;
+    return defined($self->{'shx_' . $val})
+      ? $self->{'shx_' . $val}
+      : $self->{'shp_' . $val};
 }
 
 #  factory these
