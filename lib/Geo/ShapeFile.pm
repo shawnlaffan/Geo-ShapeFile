@@ -11,7 +11,7 @@ use Scalar::Util qw/weaken/;
 use Tree::R;
 
 
-our $VERSION = '2.64';
+our $VERSION = '2.65_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
