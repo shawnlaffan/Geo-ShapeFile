@@ -523,7 +523,7 @@ sub bounds_contains_point {
 }
 
 sub file_version {
-    shift()->_get_shp_shx_header_value('file_version');
+    shift()->_get_shp_shx_header_value('version');
 }
 
 sub shape_type {
