@@ -423,7 +423,7 @@ sub _get_shp_shx_header_value {
     my $self = shift;
     my $val  = shift;
 
-    if (!defined ($self->{'shx_' . $val} || $self->{'shp_' . $val})) {
+    if (!defined ($self->{'shx_' . $val}) || !defined ($self->{'shp_' . $val})) {
         $self->_read_shx_header();
     }
 
