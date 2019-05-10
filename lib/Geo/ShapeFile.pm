@@ -13,7 +13,7 @@ use Tree::R;
 use constant ON_WINDOWS => ($^O eq 'MSWin32');
 use if ON_WINDOWS, 'Win32::LongPath';
 
-our $VERSION = '2.66';
+our $VERSION = '2.99_001';
 
 my $little_endian_sys = unpack 'b', (pack 'S', 1 );
 
