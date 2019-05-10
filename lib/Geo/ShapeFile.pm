@@ -1136,7 +1136,7 @@ Please send any bugs, suggestions, or feature requests to
 L<Geo::ShapeFile::Shape>, 
 L<Geo::ShapeFile::Point>, 
 L<Geo::Shapefile::Writer>, 
-L<Geo::GDAL>
+L<Geo::GDAL::FFI>
 
 =head1 AUTHOR
 
