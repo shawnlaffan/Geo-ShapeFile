@@ -25,6 +25,7 @@ WriteMakefile(
     },
     TEST_REQUIRES => {
         'rlib'       => 0,
+        'Test::Exception' => 0,
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },
